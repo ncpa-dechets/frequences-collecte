@@ -1,0 +1,20 @@
+{
+"type": "FeatureCollection",
+"name": "COLONNES",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "Commune": "Cabourg", "Adresse de la colonne": "Avenue de Bavent / République", "FLUX": "OMR", "ETAT": "EMPLACEMENTS VALIDÉS", "TYPE COLONNE": "ENTERRÉE" }, "geometry": { "type": "Point", "coordinates": [ -0.115484445054892, 49.290480371028053 ] } },
+{ "type": "Feature", "properties": { "Commune": "Cabourg", "Adresse de la colonne": "Avenue de Bavent / République", "FLUX": "OMR", "ETAT": "EMPLACEMENTS VALIDÉS", "TYPE COLONNE": "ENTERRÉE" }, "geometry": { "type": "Point", "coordinates": [ -0.115451144052145, 49.290483284579111 ] } },
+{ "type": "Feature", "properties": { "Commune": "Cabourg", "Adresse de la colonne": "Avenue de Bavent / République", "FLUX": "EMBALLAGES ET PAPIERS", "ETAT": "EMPLACEMENTS VALIDÉS", "TYPE COLONNE": "ENTERRÉE" }, "geometry": { "type": "Point", "coordinates": [ -0.11539793610708, 49.290491952508809 ] } },
+{ "type": "Feature", "properties": { "Commune": "Cabourg", "Adresse de la colonne": "Avenue de Bavent / République", "FLUX": "EMBALLAGES ET PAPIERS", "ETAT": "EMPLACEMENTS VALIDÉS", "TYPE COLONNE": "ENTERRÉE" }, "geometry": { "type": "Point", "coordinates": [ -0.115393465447478, 49.290487631125089 ] } },
+{ "type": "Feature", "properties": { "Commune": "Cabourg", "Adresse de la colonne": "Avenue de Bavent / République", "FLUX": "VERRE", "ETAT": "EMPLACEMENTS VALIDÉS", "TYPE COLONNE": "ENTERRÉE" }, "geometry": { "type": "Point", "coordinates": [ -0.115338172782687, 49.290494790266244 ] } },
+{ "type": "Feature", "properties": { "Commune": "Cabourg", "Adresse de la colonne": "Avenue de la Libération (place de parking)", "FLUX": "OMR", "ETAT": "EMPLACEMENTS VALIDÉS", "TYPE COLONNE": "ENTERRÉE" }, "geometry": { "type": "Point", "coordinates": [ -0.10952363205544, 49.29067938042779 ] } },
+{ "type": "Feature", "properties": { "Commune": "Cabourg", "Adresse de la colonne": "Avenue de la Libération (place de parking)", "FLUX": "EMBALLAGES ET PAPIERS", "ETAT": "EMPLACEMENTS VALIDÉS", "TYPE COLONNE": "ENTERRÉE" }, "geometry": { "type": "Point", "coordinates": [ -0.109506249222259, 49.290674296242649 ] } },
+{ "type": "Feature", "properties": { "Commune": "Cabourg", "Adresse de la colonne": "Avenue de la Libération (place de parking)", "FLUX": "VERRE", "ETAT": "EMPLACEMENTS VALIDÉS", "TYPE COLONNE": "ENTERRÉE" }, "geometry": { "type": "Point", "coordinates": [ -0.10946188363257, 49.290658009341627 ] } },
+{ "type": "Feature", "properties": { "Commune": "Cabourg", "Adresse de la colonne": "24 rue du Pont de pierre", "FLUX": "OMR", "ETAT": "EMPLACEMENTS VALIDÉS", "TYPE COLONNE": "ENTERRÉE" }, "geometry": { "type": "Point", "coordinates": [ -0.119740090038738, 49.282581086156931 ] } },
+{ "type": "Feature", "properties": { "Commune": "Cabourg", "Adresse de la colonne": "Avenue de Varaville", "FLUX": "OMR", "ETAT": "EMPLACEMENTS VALIDÉS", "TYPE COLONNE": "ENTERRÉE" }, "geometry": { "type": "Point", "coordinates": [ -0.117047142465153, 49.290579978119666 ] } },
+{ "type": "Feature", "properties": { "Commune": "Cabourg", "Adresse de la colonne": "Avenue de Varaville", "FLUX": "OMR", "ETAT": "EMPLACEMENTS VALIDÉS", "TYPE COLONNE": "ENTERRÉE" }, "geometry": { "type": "Point", "coordinates": [ -0.117047148451172, 49.290570952713125 ] } },
+{ "type": "Feature", "properties": { "Commune": "Cabourg", "Adresse de la colonne": "Avenue de Varaville", "FLUX": "EMBALLAGES ET PAPIERS", "ETAT": "EMPLACEMENTS VALIDÉS", "TYPE COLONNE": "ENTERRÉE" }, "geometry": { "type": "Point", "coordinates": [ -0.117074817764771, 49.29055289752484 ] } },
+{ "type": "Feature", "properties": { "Commune": "Cabourg", "Adresse de la colonne": "Avenue de Varaville", "FLUX": "VERRE", "ETAT": "EMPLACEMENTS VALIDÉS", "TYPE COLONNE": "ENTERRÉE" }, "geometry": { "type": "Point", "coordinates": [ -0.117094261928048, 49.290540344919911 ] } }
+]
+}

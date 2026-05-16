@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fréquences de collecte — Cabourg</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#f1f5f9;color:#1e293b}
+
+#panel{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:#ffffff;border-bottom:2px solid #e2e8f0;
+  padding:8px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  box-shadow:0 2px 10px rgba(0,0,0,.07);
+}
+.p-title{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:#0f172a;white-space:nowrap;line-height:1.5}
+.p-title small{font-weight:400;color:#94a3b8;font-size:10px;display:block}
+.p-sep{width:1px;height:30px;background:#e2e8f0;flex-shrink:0}
+.p-grp{display:flex;flex-direction:column;gap:4px}
+.p-lbl{font-size:9px;font-weight:600;color:#94a3b8;letter-spacing:.08em;text-transform:uppercase}
+.p-btns{display:flex;gap:3px;align-items:center}
+
+.btn{
+  padding:4px 11px;font-size:11px;font-weight:600;font-family:'Inter',sans-serif;
+  border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;
+  border-radius:5px;cursor:pointer;transition:all .12s;
+}
+.btn:hover{background:#f1f5f9;color:#334155;border-color:#cbd5e1}
+.btn.active{color:#fff;border-color:transparent}
+.yr.active{background:#1d4ed8}
+.flux.active.omr{background:#1d4ed8}
+.flux.active.tri{background:#059669}
+.fond.active{background:#7c3aed}
+
+.mpill{
+  padding:3px 7px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;
+  border:1px solid #e2e8f0;background:#f8fafc;color:#94a3b8;
+  border-radius:4px;cursor:pointer;transition:all .12s;
+}
+.mpill:hover{background:#f1f5f9;color:#475569}
+.mpill.active{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+
+#map{position:fixed;top:0;left:0;right:0;bottom:0;z-index:1}
+
+/* Légende — traits plus épais */
+#legend{
+  position:fixed;bottom:20px;right:16px;z-index:1000;
+  background:#fff;border:1px solid #e2e8f0;border-radius:10px;
+  padding:12px 14px;min-width:205px;
+  box-shadow:0 2px 12px rgba(0,0,0,.08);font-size:12px;
+}
+#legend h4{font-size:9px;color:#94a3b8;font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin-bottom:9px}
+.lg-row{display:flex;align-items:center;gap:9px;margin-bottom:6px;color:#334155}
+.lg-line{width:28px;height:7px;border-radius:3px;flex-shrink:0}
+.lg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;border:2px solid rgba(0,0,0,.2)}
+.lg-code{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:#64748b;min-width:28px}
+.lg-hr{border:none;border-top:1px solid #f1f5f9;margin:8px 0}
+
+#infobox{
+  position:fixed;bottom:20px;left:16px;z-index:1000;
+  background:#fff;border:1px solid #e2e8f0;border-radius:10px;
+  padding:14px 18px;max-width:420px;
+  box-shadow:0 2px 12px rgba(0,0,0,.08);
+}
+.ib-head{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:#0f172a;margin-bottom:9px}
+.ib-row{display:flex;justify-content:space-between;gap:10px;color:#64748b;font-size:13px;margin-bottom:4px}
+.ib-val{font-family:'JetBrains Mono',monospace;font-weight:600;color:#1e293b}
+.ib-hint{margin-top:9px;font-size:11px;color:#94a3b8;font-style:italic}
+
+/* Couches colonnes / PDR */
+.btn.layer{border-color:#e2e8f0;color:#64748b;background:#f8fafc}
+.btn.layer:hover{background:#f1f5f9;color:#334155}
+.btn.layer.active-col-omr{background:#6b7280;color:#fff;border-color:#6b7280}
+.btn.layer.active-col-emb{background:#f97316;color:#fff;border-color:#f97316}
+.btn.layer.active-col-verre{background:#16a34a;color:#fff;border-color:#16a34a}
+.btn.layer.active-pdr{background:#7c3aed;color:#fff;border-color:#7c3aed}
+/* Popup colonnes / PDR */
+.pop-col-badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700;margin-bottom:8px}
+.pop-row{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:#64748b;margin-bottom:3px}
+.pop-row b{color:#1e293b;font-weight:600}
+.pop-devenir{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;margin-bottom:8px}
+.leaflet-popup-content-wrapper{border-radius:8px!important;box-shadow:0 4px 20px rgba(0,0,0,.12)!important;border:1px solid #e2e8f0!important}
+.leaflet-popup-content{margin:12px 14px!important;font-family:'Inter',sans-serif}
+.pop-name{font-size:13px;font-weight:600;color:#0f172a;margin-bottom:2px}
+.pop-type{font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.pop-yr{margin-bottom:10px}
+.pop-badge{display:inline-block;padding:2px 8px;border-radius:4px;margin-bottom:6px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.badge-c{background:#eff6ff;color:#1d4ed8}
+.badge-p{background:#fff7ed;color:#c2410c}
+.pop-fl{font-size:9px;color:#94a3b8;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
+.pop-grid{display:grid;grid-template-columns:auto auto 1fr;gap:2px 8px;font-family:'JetBrains Mono',monospace;font-size:10px;margin-bottom:6px}
+.pg-m{color:#94a3b8}.pg-c{font-weight:600}.pg-d{color:#64748b}
+
+/* ── CSS VARS pour les frises (reprises du dashboard) ── */
+:root{
+  --bg:#f8fafc;--card:#ffffff;--text:#1e293b;--muted:#64748b;
+  --accent:#2563eb;--border:#e2e8f0;--radius:8px;
+  --shadow:0 1px 4px rgba(0,0,0,.07);
+}
+
+/* ── Bouton frise dans le panel ── */
+.btn.cal{border-color:#1d4ed8;color:#1d4ed8;background:#eff6ff}
+.btn.cal:hover{background:#dbeafe}
+.btn.cal.active{background:#1d4ed8;color:#fff}
+
+/* ── Panneau frise (overlay plein écran par-dessus la carte) ── */
+#frisePanel{
+  display:none;
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:900;
+  background:#f8fafc;overflow-y:auto;
+  padding-top:60px; /* hauteur du panel */
+}
+#friseInner{
+  max-width:1300px;margin:0 auto;padding:24px 28px 48px;
+}
+#frisePanel h2{
+  font-size:1.2rem;font-weight:700;color:#0f172a;
+  display:flex;align-items:center;gap:10px;margin-bottom:18px;
+}
+</style>
+</head>
+<body>
+
+<div id="panel">
+  <div class="p-title">
+    Fréquences de collecte · Cabourg
+    <small>NCPA — Normandie-Cabourg-Pays d'Auge</small>
+  </div>
+  <div class="p-sep"></div>
+  <div class="p-grp">
+    <div class="p-lbl">Année</div>
+    <div class="p-btns">
+      <button class="btn yr active" id="btn2026" onclick="setYear(2026)">2026</button>
+      <button class="btn yr" id="btn2027" onclick="setYear(2027)">2027</button>
+    </div>
+  </div>
+  <div class="p-sep"></div>
+  <div class="p-grp">
+    <div class="p-lbl">Flux</div>
+    <div class="p-btns">
+      <button class="btn flux omr active" id="btnOMR" onclick="setFlux('OMR')">OMR</button>
+      <button class="btn flux tri" id="btnTRI" onclick="setFlux('TRI')">Tri sélectif</button>
+    </div>
+  </div>
+  <div class="p-sep"></div>
+  <div class="p-grp">
+    <div class="p-lbl">Mois</div>
+    <div class="p-btns">
+      <div class="mpill" data-m="0" onclick="setMonth(0)">Jan</div>
+      <div class="mpill" data-m="1" onclick="setMonth(1)">Fév</div>
+      <div class="mpill" data-m="2" onclick="setMonth(2)">Mar</div>
+      <div class="mpill" data-m="3" onclick="setMonth(3)">Avr</div>
+      <div class="mpill" data-m="4" onclick="setMonth(4)">Mai</div>
+      <div class="mpill" data-m="5" onclick="setMonth(5)">Juin</div>
+      <div class="mpill active" data-m="6" onclick="setMonth(6)">Juil</div>
+      <div class="mpill" data-m="7" onclick="setMonth(7)">Août</div>
+      <div class="mpill" data-m="8" onclick="setMonth(8)">Sep</div>
+      <div class="mpill" data-m="9" onclick="setMonth(9)">Oct</div>
+      <div class="mpill" data-m="10" onclick="setMonth(10)">Nov</div>
+      <div class="mpill" data-m="11" onclick="setMonth(11)">Déc</div>
+    </div>
+  </div>
+  <div class="p-sep"></div>
+  <div class="p-grp">
+    <div class="p-lbl">Fond de carte</div>
+    <div class="p-btns">
+      <button class="btn fond active" id="btnPlan" onclick="setFond('plan')">Plan</button>
+      <button class="btn fond" id="btnSat" onclick="setFond('sat')">Satellite</button>
+    </div>
+  </div>
+  <div class="p-sep"></div>
+  <button class="btn cal" id="btnCal" onclick="toggleFrise()" style="align-self:center">
+    📅 Calendriers de collecte
+  </button>
+  <div class="p-sep"></div>
+  <div class="p-grp">
+    <div class="p-lbl">Colonnes enterrées</div>
+    <div class="p-btns">
+      <button class="btn layer" id="btnColOMR" onclick="toggleCouche('col-omr')">⬤ OMR</button>
+      <button class="btn layer" id="btnColEMB" onclick="toggleCouche('col-emb')">⬤ Emballages</button>
+      <button class="btn layer" id="btnColVerre" onclick="toggleCouche('col-verre')">⬤ Verre</button>
+    </div>
+  </div>
+  <div class="p-sep"></div>
+  <div class="p-grp">
+    <div class="p-lbl">Points de regroupement</div>
+    <div class="p-btns">
+      <button class="btn layer" id="btnPDR" onclick="toggleCouche('pdr')">⬤ PDR</button>
+    </div>
+  </div>
+</div>
+
+<div id="map"></div>
+
+<!-- PANNEAU FRISES -->
+<div id="frisePanel">
+  <div id="friseInner">
+    <h2>
+      <span style="font-size:1.4rem">📅</span>
+      Cabourg
+      <span style="font-size:.8rem;font-weight:400;color:#64748b">Littorale · 2026 &amp; 2027</span>
+      <button onclick="toggleFrise()" style="margin-left:auto;padding:5px 14px;font-size:11px;font-weight:600;font-family:'Inter',sans-serif;border:1px solid #e2e8f0;background:#fff;color:#64748b;border-radius:5px;cursor:pointer">
+        ✕ Fermer
+      </button>
+    </h2>
+    <div id="friseLegende"></div>
+    <div id="friseContent"></div>
+  </div>
+</div>
+
+<div id="legend">
+  <h4 id="leg-title">OMR · fréquence hebdomadaire</h4>
+  <div class="lg-row"><div class="lg-line" style="background:#b91c1c"></div><span class="lg-code">C7</span>Quotidien (7×/sem.)</div>
+  <div class="lg-row"><div class="lg-line" style="background:#f97316"></div><span class="lg-code">C6</span>6× / semaine</div>
+  <div class="lg-row"><div class="lg-line" style="background:#ca8a04"></div><span class="lg-code">C3</span>3× / semaine</div>
+  <div class="lg-row"><div class="lg-line" style="background:#16a34a"></div><span class="lg-code">C2</span>2× / semaine</div>
+  <div class="lg-row"><div class="lg-line" style="background:#1d4ed8"></div><span class="lg-code">C1</span>1× / semaine</div>
+  <div class="lg-row"><div class="lg-line" style="background:#94a3b8"></div><span class="lg-code">C0.5</span>1× / 2 semaines</div>
+  <div class="lg-hr"></div>
+  <div class="lg-row"><div class="lg-dot" style="background:#f97316;border-color:#c2410c"></div><span style="color:#64748b;font-size:10px">Point — cas particuliers</span></div>
+  <div class="lg-row"><div class="lg-dot" style="background:#1d4ed8;border-color:#1e40af"></div><span style="color:#64748b;font-size:10px">Point — collecte standard</span></div>
+</div>
+
+<div id="infobox">
+  <div class="ib-head" id="ib-head">Juillet 2026 · OMR</div>
+  <div class="ib-row"><span>Toutes voies (commune)</span><span class="ib-val" id="ib-comm">—</span></div>
+  <div class="ib-row"><span>Voies / points cas particuliers</span><span class="ib-val" id="ib-part">—</span></div>
+  <div class="ib-hint">Cliquer sur une voie ou un point pour le détail annuel</div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script>
+var FREQ = {
+  2026:{
+    COMMUNE:{
+      OMR:["C2 Lundi et vendredi","C2 Lundi et vendredi","C2 Lundi et vendredi","C2 Lundi et vendredi","C2 Lundi et vendredi","C2 Lundi et vendredi","C3 Lun/Mer/Ven","C3 Lun/Mer/Ven","C2 Lundi et vendredi","C2 Lundi et vendredi","C1 Lundi","C1 Lundi"],
+      TRI:["C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C0.5 Lundi impair","C0.5 Lundi impair"]
+    },
+    PARTICULIERS:{
+      OMR:["C6 Lundi au samedi","C6 Lundi au samedi","C6 Lundi au samedi","C7 Lundi au dimanche","C7 Lundi au dimanche","C7 Lundi au dimanche","C7 Lundi au dimanche","C7 Lundi au dimanche","C7 Lundi au dimanche","C6 Lundi au samedi","C2 Lundi et vendredi","C2 Lundi et vendredi"],
+      TRI:["C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C0.5 Lundi impair","C0.5 Lundi impair"]
+    }
+  },
+  2027:{
+    COMMUNE:{
+      OMR:["C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi"],
+      TRI:["C0.5 Lundi impair","C0.5 Lundi impair","C0.5 Lundi impair","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C0.5 Lundi impair","C0.5 Lundi impair"]
+    },
+    PARTICULIERS:{
+      OMR:["C2 Lundi et vendredi","C2 Lundi et vendredi","C2 Lundi et vendredi","C3 Lundi, vendredi et dimanche","C3 Lundi, vendredi et dimanche","C3 Lundi, vendredi et dimanche","C3 Lundi, vendredi et dimanche","C3 Lundi, vendredi et dimanche","C3 Lundi, vendredi et dimanche","C3 Lundi, vendredi et dimanche","C2 Lundi et vendredi","C2 Lundi et vendredi"],
+      TRI:["C0.5 Lundi impair","C0.5 Lundi impair","C0.5 Lundi impair","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C1 Lundi","C0.5 Lundi impair","C0.5 Lundi impair"]
+    }
+  }
+};
+var MOIS_L=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+var MOIS_S=["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"];
+var COLORS={"C0.5":"#94a3b8","C1":"#1d4ed8","C2":"#16a34a","C3":"#ca8a04","C6":"#f97316","C7":"#b91c1c"};
+var STATE={year:2026,flux:"OMR",month:6,fond:"plan"};
+
+var VOIES_GJ=null;
+var POINTS_GJ=null;
+
+function pc(raw){return raw.split(" ")[0];}
+function pd(raw){return raw.split(" ").slice(1).join(" ");}
+function gc(code){return COLORS[code]||"#94a3b8";}
+function gp(props,year){var k=year===2026?"collecte_renf_26":"collecte_renf_27";return props[k]==="Oui"?"PARTICULIERS":"COMMUNE";}
+function gf(p,y,fl,m){return FREQ[y][p][fl][m];}
+
+// Label d'affichage : remplace "PARTICULIERS" par "Cas particuliers"
+function labelProfil(p){return p==="PARTICULIERS"?"Cas particuliers":"Commune";}
+
+var tPlan=L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{attribution:"© OpenStreetMap © CartoDB",maxZoom:19});
+var tSat=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{attribution:"© Esri",maxZoom:19});
+var map=L.map("map",{center:[49.2885,-0.1205],zoom:14,layers:[tPlan],zoomControl:false});
+L.control.zoom({position:"bottomright"}).addTo(map);
+
+var vL=null, pL=null;
+
+function renderVoies(){
+  if(vL){map.removeLayer(vL);vL=null;}
+  vL=L.geoJSON(VOIES_GJ,{
+    style:function(f){
+      var p=gp(f.properties,STATE.year);
+      var raw=gf(p,STATE.year,STATE.flux,STATE.month);
+      var code=pc(raw);
+      var isR=(p==="PARTICULIERS");
+      return{color:gc(code),weight:isR?7:3,opacity:0.85,lineCap:"round",lineJoin:"round"};
+    },
+    onEachFeature:function(f,layer){
+      layer.on("click",function(e){
+        var nom=f.properties["_Nom de voie"]||f.properties["nom_voie_ban_gauche"]||"Voie sans nom";
+        var p=gp(f.properties,STATE.year);
+        openVoiePopup(e.latlng,nom,f.properties);
+      });
+      layer.on("mouseover",function(){this.setStyle({weight:this.options.weight+2});});
+      layer.on("mouseout",function(){this.setStyle({weight:this.options.weight-2});});
+    }
+  }).addTo(map);
+}
+
+function renderPoints(){
+  if(pL){map.removeLayer(pL);pL=null;}
+  pL=L.geoJSON(POINTS_GJ,{
+    pointToLayer:function(f,latlng){
+      var p=gp(f.properties,STATE.year);
+      var raw=gf(p,STATE.year,STATE.flux,STATE.month);
+      var code=pc(raw);
+      var isR=(p==="PARTICULIERS");
+      var col=gc(code);
+      return L.circleMarker(latlng,{
+        radius:isR?10:7,
+        fillColor:col,
+        color:isR?"#c2410c":"#1e40af",
+        weight:2,opacity:1,fillOpacity:isR?0.9:0.7
+      });
+    },
+    onEachFeature:function(f,layer){
+      layer.on("click",function(e){openPointPopup(e.latlng,f.properties);});
+    }
+  }).addTo(map);
+}
+
+function freqGrid(year,profil,flux){
+  var data=FREQ[year][profil][flux];
+  var groups=[],cur={raw:data[0],months:[0]};
+  for(var i=1;i<12;i++){
+    if(data[i]===cur.raw){cur.months.push(i);}
+    else{groups.push(cur);cur={raw:data[i],months:[i]};}
+  }
+  groups.push(cur);
+  var h='<div class="pop-grid">';
+  for(var g=0;g<groups.length;g++){
+    var gr=groups[g];
+    var code=pc(gr.raw),days=pd(gr.raw),col=gc(code);
+    var ml;
+    if(gr.months.length===12){ml="Toute l'année";}
+    else if(gr.months.length===1){ml=MOIS_S[gr.months[0]];}
+    else{ml=MOIS_S[gr.months[0]]+"–"+MOIS_S[gr.months[gr.months.length-1]];}
+    h+='<span class="pg-m">'+ml+'</span><span class="pg-c" style="color:'+col+'">'+code+'</span><span class="pg-d">'+days+'</span>';
+  }
+  h+='</div>';
+  return h;
+}
+
+function openVoiePopup(latlng,nom,props){
+  var h='<div class="pop-name">'+nom+'</div><div class="pop-type">Voie de collecte</div>';
+  [2026,2027].forEach(function(yr){
+    var pf=gp(props,yr);
+    var cls=pf==="PARTICULIERS"?"badge-p":"badge-c";
+    h+='<div class="pop-yr"><span class="pop-badge '+cls+'">'+yr+' · '+labelProfil(pf)+'</span>';
+    h+='<div class="pop-fl">OMR</div>'+freqGrid(yr,pf,"OMR");
+    h+='<div class="pop-fl">Tri sélectif</div>'+freqGrid(yr,pf,"TRI")+'</div>';
+  });
+  L.popup({maxWidth:360}).setLatLng(latlng).setContent(h).openOn(map);
+}
+
+function openPointPopup(latlng,props){
+  var h='<div class="pop-name">'+props.Name+'</div><div class="pop-type">Point particulier</div>';
+  [2026,2027].forEach(function(yr){
+    var pf=gp(props,yr);
+    var cls=pf==="PARTICULIERS"?"badge-p":"badge-c";
+    h+='<div class="pop-yr"><span class="pop-badge '+cls+'">'+yr+' · '+labelProfil(pf)+'</span>';
+    h+='<div class="pop-fl">OMR</div>'+freqGrid(yr,pf,"OMR");
+    h+='<div class="pop-fl">Tri sélectif</div>'+freqGrid(yr,pf,"TRI")+'</div>';
+  });
+  L.popup({maxWidth:360}).setLatLng(latlng).setContent(h).openOn(map);
+}
+
+function updateInfoBox(){
+  var commRaw=gf("COMMUNE",STATE.year,STATE.flux,STATE.month);
+  document.getElementById("ib-head").textContent=MOIS_L[STATE.month]+" "+STATE.year+" · "+(STATE.flux==="OMR"?"Ordures ménagères":"Tri sélectif");
+  document.getElementById("ib-comm").textContent=pc(commRaw)+" — "+pd(commRaw);
+  var key=STATE.year===2026?"collecte_renf_26":"collecte_renf_27";
+  var nRV=0;
+  for(var i=0;i<VOIES_GJ.features.length;i++){if(VOIES_GJ.features[i].properties[key]==="Oui")nRV++;}
+  var nRP=0;
+  for(var j=0;j<POINTS_GJ.features.length;j++){if(POINTS_GJ.features[j].properties[key]==="Oui")nRP++;}
+  if(nRV>0||nRP>0){
+    var pRaw=gf("PARTICULIERS",STATE.year,STATE.flux,STATE.month);
+    document.getElementById("ib-part").textContent=pc(pRaw)+" — "+pd(pRaw)+" ("+nRV+" voies, "+nRP+" pts)";
+  } else {
+    document.getElementById("ib-part").textContent="Aucun";
+  }
+}
+
+function setYear(yr){
+  STATE.year=yr;
+  document.getElementById("btn2026").classList.toggle("active",yr===2026);
+  document.getElementById("btn2027").classList.toggle("active",yr===2027);
+  refresh();
+}
+function setFlux(fl){
+  STATE.flux=fl;
+  document.getElementById("btnOMR").classList.toggle("active",fl==="OMR");
+  document.getElementById("btnTRI").classList.toggle("active",fl==="TRI");
+  document.getElementById("leg-title").textContent=fl==="OMR"?"OMR · fréquence hebdomadaire":"Tri sélectif · fréquence hebdomadaire";
+  refresh();
+}
+function setMonth(m){
+  STATE.month=m;
+  document.querySelectorAll(".mpill").forEach(function(el){
+    el.classList.toggle("active",parseInt(el.getAttribute("data-m"))===m);
+  });
+  refresh();
+}
+function setFond(f){
+  STATE.fond=f;
+  document.getElementById("btnPlan").classList.toggle("active",f==="plan");
+  document.getElementById("btnSat").classList.toggle("active",f==="sat");
+  if(f==="plan"){if(map.hasLayer(tSat))map.removeLayer(tSat);map.addLayer(tPlan);}
+  else{if(map.hasLayer(tPlan))map.removeLayer(tPlan);map.addLayer(tSat);}
+}
+function refresh(){renderVoies();renderPoints();updateInfoBox();}
+
+// Chargement des données géographiques externes
+Promise.all([
+  fetch('voies.geojson').then(function(r){return r.json();}),
+  fetch('points.geojson').then(function(r){return r.json();}),
+  fetch('COLONNES.geojson').then(function(r){return r.json();}),
+  fetch('PDR.geojson').then(function(r){return r.json();})
+]).then(function(results){
+  VOIES_GJ = results[0];
+  POINTS_GJ = results[1];
+  var colonnesGJ = results[2];
+  var pdrGJ = results[3];
+  initCouches(colonnesGJ, pdrGJ);
+  map.whenReady(function(){map.invalidateSize();refresh();});
+}).catch(function(err){
+  console.error('Erreur chargement GeoJSON:', err);
+});
+
+// ── COUCHES COLONNES & PDR ─────────────────────────────────────────────
+
+var COUCHES = { 'col-omr': null, 'col-emb': null, 'col-verre': null, 'pdr': null };
+var COUCHES_VISIBLE = { 'col-omr': false, 'col-emb': false, 'col-verre': false, 'pdr': false };
+
+var FLUX_CONFIG = {
+  'OMR':                 { key:'col-omr',   btn:'btnColOMR',    color:'#6b7280', label:'OMR',              activeClass:'active-col-omr'  },
+  'EMBALLAGES ET PAPIERS':{ key:'col-emb',  btn:'btnColEMB',    color:'#f97316', label:'Emballages/Papiers',activeClass:'active-col-emb'  },
+  'VERRE':               { key:'col-verre', btn:'btnColVerre',  color:'#16a34a', label:'Verre',            activeClass:'active-col-verre' }
+};
+
+var DEVENIR_CONFIG = {
+  'EXISTANT':   { bg:'#dcfce7', fg:'#15803d' },
+  'A AMÉNAGER': { bg:'#fef9c3', fg:'#92400e' },
+  'A AGRANDIR': { bg:'#dbeafe', fg:'#1d4ed8' },
+  'A DECIDER':  { bg:'#f3e8ff', fg:'#7c3aed' }
+};
+
+function initCouches(colonnesGJ, pdrGJ) {
+  // Séparer les colonnes par flux
+  ['OMR','EMBALLAGES ET PAPIERS','VERRE'].forEach(function(flux) {
+    var cfg = FLUX_CONFIG[flux];
+    var subset = { type:'FeatureCollection', features: colonnesGJ.features.filter(function(f){ return f.properties.FLUX === flux; }) };
+
+    // Cluster pour chaque flux
+    var cluster = L.markerClusterGroup({
+      maxClusterRadius: 40,
+      iconCreateFunction: function(c) {
+        return L.divIcon({
+          html: '<div style="background:'+cfg.color+';color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;border:2px solid rgba(255,255,255,.7);box-shadow:0 2px 6px rgba(0,0,0,.25)">'+c.getChildCount()+'</div>',
+          className:'', iconSize:[32,32]
+        });
+      }
+    });
+
+    L.geoJSON(subset, {
+      pointToLayer: function(f, latlng) {
+        return L.circleMarker(latlng, {
+          radius: 9,
+          fillColor: cfg.color,
+          color: '#fff',
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.9
+        });
+      },
+      onEachFeature: function(f, layer) {
+        var p = f.properties;
+        var popup = '<div class="pop-name">🗑️ Colonne enterrée</div>'
+          + '<span class="pop-col-badge" style="background:'+cfg.color+'22;color:'+cfg.color+';border:1.5px solid '+cfg.color+'">'+cfg.label+'</span>'
+          + '<div class="pop-row"><span>Adresse</span><b>'+p['Adresse de la colonne']+'</b></div>'
+          + '<div class="pop-row"><span>Commune</span><b>'+p['Commune']+'</b></div>'
+          + '<div class="pop-row"><span>Type</span><b>'+p['TYPE COLONNE']+'</b></div>'
+          + '<div class="pop-row"><span>État</span><b>'+p['ETAT']+'</b></div>';
+        layer.bindPopup(popup, {maxWidth:280});
+      }
+    }).addTo(cluster);
+
+    COUCHES[cfg.key] = cluster;
+  });
+
+  // Couche PDR
+  var pdrLayer = L.geoJSON(pdrGJ, {
+    pointToLayer: function(f, latlng) {
+      var dev = f.properties['DEVENIR'] || '';
+      var cfg2 = DEVENIR_CONFIG[dev] || { bg:'#e2e8f0', fg:'#64748b' };
+      return L.circleMarker(latlng, {
+        radius: 10,
+        fillColor: cfg2.bg,
+        color: '#7c3aed',
+        weight: 2.5,
+        opacity: 1,
+        fillOpacity: 1
+      });
+    },
+    onEachFeature: function(f, layer) {
+      var p = f.properties;
+      var dev = p['DEVENIR'] || 'N/A';
+      var dcfg = DEVENIR_CONFIG[dev] || { bg:'#e2e8f0', fg:'#64748b' };
+      var popup = '<div class="pop-name">📦 Point de regroupement</div>'
+        + '<span class="pop-devenir" style="background:'+dcfg.bg+';color:'+dcfg.fg+'">'+dev+'</span>'
+        + '<div class="pop-row"><span>ID</span><b>PDR-'+p['ID_PDR']+'</b></div>'
+        + '<div class="pop-row"><span>Adresse</span><b>'+(p['Adresse']||'—')+'</b></div>'
+        + (p['Précisions'] ? '<div class="pop-row"><span>Précisions</span><b>'+p['Précisions']+'</b></div>' : '')
+        + '<div class="pop-row"><span>Domaine</span><b>'+(p['Domaine']||'—')+'</b></div>'
+        + '<hr style="border:none;border-top:1px solid #e2e8f0;margin:6px 0">'
+        + '<div class="pop-row"><span>Bacs OMR</span><b>'+(p['NB bacs OMR']||0)+'</b></div>'
+        + '<div class="pop-row"><span>Bacs Emb/Pap</span><b>'+(p['Nb bacs EMB/PAP']||0)+'</b></div>'
+        + (p['Rajout OMR'] ? '<div class="pop-row"><span>Rajout OMR</span><b>+'+p['Rajout OMR']+'</b></div>' : '')
+        + (p['Rajout EMB/PAP'] ? '<div class="pop-row"><span>Rajout Emb/Pap</span><b>+'+p['Rajout EMB/PAP']+'</b></div>' : '')
+        + (p['DATE DEMANDE'] ? '<div class="pop-row"><span>Date demande</span><b>'+p['DATE DEMANDE']+'</b></div>' : '');
+      layer.bindPopup(popup, {maxWidth:280});
+    }
+  });
+  COUCHES['pdr'] = pdrLayer;
+}
+
+function toggleCouche(key) {
+  var visible = COUCHES_VISIBLE[key];
+  var layer = COUCHES[key];
+  if (!layer) return;
+
+  if (visible) {
+    map.removeLayer(layer);
+    COUCHES_VISIBLE[key] = false;
+  } else {
+    map.addLayer(layer);
+    COUCHES_VISIBLE[key] = true;
+  }
+
+  // Mettre à jour le bouton
+  var btnId = { 'col-omr':'btnColOMR', 'col-emb':'btnColEMB', 'col-verre':'btnColVerre', 'pdr':'btnPDR' }[key];
+  var activeClass = { 'col-omr':'active-col-omr', 'col-emb':'active-col-emb', 'col-verre':'active-col-verre', 'pdr':'active-pdr' }[key];
+  var btn = document.getElementById(btnId);
+  if (!COUCHES_VISIBLE[key]) {
+    btn.classList.remove('layer', activeClass);
+    btn.classList.add('layer');
+  } else {
+    btn.classList.add(activeClass);
+  }
+}
+
+// ── FRISES ────────────────────────────────────────────────────────────
+
+// Données Cabourg construites depuis FREQ
+var CABOURG_CJOURS = {
+  "2026":{
+    commune:    { OMR: FREQ[2026].COMMUNE.OMR,     TRI: FREQ[2026].COMMUNE.TRI },
+    particuliers:{ OMR: FREQ[2026].PARTICULIERS.OMR, TRI: FREQ[2026].PARTICULIERS.TRI }
+  },
+  "2027":{
+    commune:    { OMR: FREQ[2027].COMMUNE.OMR,     TRI: FREQ[2027].COMMUNE.TRI },
+    particuliers:{ OMR: FREQ[2027].PARTICULIERS.OMR, TRI: FREQ[2027].PARTICULIERS.TRI }
+  }
+};
+var CABOURG_R = { nom:"Cabourg", zone:"Littorale", cJours: CABOURG_CJOURS };
+
+function toggleFrise(){
+  var panel = document.getElementById("frisePanel");
+  var btn   = document.getElementById("btnCal");
+  var showing = panel.style.display === "block";
+  if(showing){
+    panel.style.display = "none";
+    btn.classList.remove("active");
+    btn.textContent = "📅 Calendriers de collecte";
+  } else {
+    panel.style.display = "block";
+    btn.classList.add("active");
+    btn.textContent = "✕ Fermer les calendriers";
+    renderFrises();
+  }
+}
+
+function friseColor(rawCode, flux){
+  var code = String(rawCode||'').replace('C','').replace(',','.').trim();
+  var n = parseFloat(code);
+  if(isNaN(n)) return {bg:'#e2e8f0',fg:'#64748b',border:'#e2e8f0'};
+  if(flux==='OMR'){
+    if(n<=0.5) return{bg:'#e5e7eb',fg:'#374151',border:'#d1d5db'};
+    if(n<=1)   return{bg:'#d1d5db',fg:'#1f2937',border:'#9ca3af'};
+    if(n<=2)   return{bg:'#9ca3af',fg:'#ffffff',border:'#6b7280'};
+    if(n<=3)   return{bg:'#6b7280',fg:'#ffffff',border:'#4b5563'};
+    if(n<=4)   return{bg:'#4b5563',fg:'#ffffff',border:'#374151'};
+    if(n<=5)   return{bg:'#374151',fg:'#ffffff',border:'#1f2937'};
+    if(n<=6)   return{bg:'#1f2937',fg:'#ffffff',border:'#111827'};
+               return{bg:'#020617',fg:'#ffffff',border:'#020617'};
+  } else {
+    if(n<=0.5) return{bg:'#fef9c3',fg:'#92400e',border:'#fde68a'};
+               return{bg:'#fde68a',fg:'#78350f',border:'#fbbf24'};
+  }
+}
+
+function parseFreqCode(raw){
+  var s=String(raw||'').trim();
+  if(!s) return{code:'',jours:'',num:0};
+  var parts=s.split(' ');
+  var code=parts[0].toUpperCase();
+  var jours=parts.slice(1).join(' ');
+  var num=parseFloat(code.replace('C','').replace(',','.'))||0;
+  return{code:code,jours:jours,num:num};
+}
+
+function buildGroups(moisArr){
+  var groups=[];
+  for(var i=0;i<12;i++){
+    var raw=(moisArr&&moisArr[i])?moisArr[i].trim():'';
+    var pf=parseFreqCode(raw);
+    var last=groups[groups.length-1];
+    if(last&&last.raw===raw){last.span++;}
+    else{groups.push({raw:raw,code:pf.code,jours:pf.jours,start:i,span:1});}
+  }
+  return groups;
+}
+
+function renderLegende(){
+  var MOIS=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+  var itemsOMR=[{code:'C0.5',label:'1×/2 sem.'},{code:'C1',label:'1×/sem.'},{code:'C2',label:'2×/sem.'},{code:'C3',label:'3×/sem.'},{code:'C4',label:'4×/sem.'},{code:'C5',label:'5×/sem.'},{code:'C6',label:'6×/sem.'},{code:'C7',label:'7×/sem.'}];
+  var itemsTRI=[{code:'C0.5',label:'1×/2 sem.'},{code:'C1',label:'1×/sem.'}];
+  var fluxes=[{key:'OMR',label:'OMR (déchets résiduels)',items:itemsOMR},{key:'TRI',label:'TRI (recyclables)',items:itemsTRI}];
+  var html='<div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;padding:14px 18px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.07);border:1px solid #e2e8f0;margin-bottom:22px">';
+  html+='<div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;align-self:center;white-space:nowrap">Fréquences :</div>';
+  fluxes.forEach(function(f){
+    html+='<div style="display:flex;align-items:center;gap:6px"><span style="font-size:.68rem;font-weight:700;color:#94a3b8;white-space:nowrap">'+f.label+'</span>';
+    f.items.forEach(function(it){
+      var c=friseColor(it.code,f.key);
+      html+='<div title="'+it.code+' = '+it.label+'" style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:default">';
+      html+='<div style="width:38px;height:24px;background:'+c.bg+';border:1.5px solid '+c.border+';border-radius:5px;display:flex;align-items:center;justify-content:center">';
+      html+='<span style="font-size:.62rem;font-weight:800;color:'+c.fg+'">'+it.code+'</span></div>';
+      html+='<span style="font-size:.52rem;color:#94a3b8;line-height:1">'+it.label+'</span></div>';
+    });
+    html+='</div>';
+  });
+  html+='</div>';
+  return html;
+}
+
+function renderFriseAnnee(annee, r){
+  var MOIS=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+  var ad = r.cJours && r.cJours[annee];
+  if(!ad) return '';
+
+  var thead='<thead><tr style="position:sticky;top:0;z-index:3;background:#fff">';
+  thead+='<th style="padding:8px 10px;text-align:left;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#64748b;border-bottom:2px solid #e2e8f0;min-width:120px;max-width:150px;background:#fff;position:sticky;left:0;z-index:4">Commune</th>';
+  thead+='<th style="padding:6px 2px;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:#64748b;border-bottom:2px solid #e2e8f0;width:32px;min-width:32px;text-align:center;background:#fff">Flux</th>';
+  MOIS.forEach(function(m,mi){
+    var isTrim=(mi===3||mi===6||mi===9);
+    var bl=mi>0?(isTrim?'border-left:2.5px solid #64748b;':'border-left:2px solid #cbd5e1;'):'';
+    thead+='<th style="padding:6px 1px;font-size:.65rem;font-weight:700;color:#64748b;border-bottom:2px solid #e2e8f0;text-align:center;min-width:44px;background:#fff;'+bl+'">'+m+'</th>';
+  });
+  thead+='</tr></thead>';
+
+  var hasParticuliers = ad['particuliers'] && ['OMR','TRI'].some(function(fl){return ad['particuliers'][fl]&&ad['particuliers'][fl].some(function(v){return v;});});
+  var profils=[
+    {key:'commune',     label:null,               bg:'#f8fafc'},
+    {key:'particuliers',label:'Voies particulières',bg:'#faf5ff'}
+  ];
+  var fluxOrder=['OMR','TRI'];
+
+  var totalRows=0;
+  profils.forEach(function(p){
+    if(!ad[p.key])return;
+    fluxOrder.forEach(function(fl){
+      if(ad[p.key][fl]&&ad[p.key][fl].some(function(v){return v;}))totalRows++;
+    });
+  });
+
+  var tbody='<tbody>';
+  var firstRow=true;
+  profils.forEach(function(p){
+    if(!ad[p.key])return;
+    fluxOrder.forEach(function(fl){
+      var moisArr=ad[p.key][fl];
+      if(!moisArr||!moisArr.some(function(v){return v;}))return;
+      var groups=buildGroups(moisArr);
+      var fluxBg=fl==='OMR'?'#e5e7eb':'#fef9c3';
+      var fluxFg=fl==='OMR'?'#374151':'#92400e';
+      tbody+='<tr style="background:'+p.bg+'">';
+      if(firstRow){
+        tbody+='<td rowspan="'+totalRows+'" style="padding:6px 10px;border-bottom:2px solid #e2e8f0;vertical-align:top;position:sticky;left:0;background:#f8fafc;z-index:1">';
+        tbody+='<div style="font-size:.82rem;font-weight:700;color:#1e293b;margin-bottom:3px">'+r.nom+'</div>';
+        tbody+='<div style="font-size:.65rem;color:#64748b">'+(r.zone||'')+'</div></td>';
+        firstRow=false;
+      }
+      tbody+='<td style="padding:4px 6px;border-bottom:1px solid #e2e8f0;text-align:center;white-space:nowrap">';
+      if(p.key==='commune'&&fl==='OMR'&&hasParticuliers)tbody+='<div style="font-size:.55rem;font-weight:700;color:#475569;margin-bottom:2px;white-space:nowrap">Commune entière</div>';
+      if(p.key==='particuliers'&&fl==='OMR')tbody+='<div style="font-size:.55rem;font-weight:700;color:#7c3aed;margin-bottom:2px;white-space:nowrap">Voies particulières</div>';
+      tbody+='<span style="display:inline-block;padding:2px 5px;border-radius:8px;font-size:.6rem;font-weight:800;background:'+fluxBg+';color:'+fluxFg+'">'+fl+'</span></td>';
+
+      var moisIndex=0;
+      groups.forEach(function(g){
+        var isTrim=(moisIndex===3||moisIndex===6||moisIndex===9);
+        var bl=moisIndex>0?(isTrim?'border-left:2.5px solid #64748b;':'border-left:2px solid #cbd5e1;'):'';
+        var internalSeps='';
+        if(g.span>1){
+          for(var s=1;s<g.span;s++){
+            var leftPct=(s/g.span)*100;
+            var absMois=moisIndex+s;
+            var isIT=(absMois===3||absMois===6||absMois===9);
+            internalSeps+='<span style="position:absolute;top:0;bottom:0;left:'+leftPct+'%;width:'+(isIT?'1.5px':'1px')+';background:'+(isIT?'rgba(100,116,139,.75)':'rgba(148,163,184,.5)')+';pointer-events:none;z-index:0"></span>';
+          }
+        }
+        if(!g.raw){
+          tbody+='<td colspan="'+g.span+'" style="padding:3px 2px;border-bottom:1px solid #e2e8f0;'+bl+'position:relative;height:46px">'+internalSeps+'</td>';
+        } else {
+          var c=friseColor(g.code,fl);
+          var rangeLabel=g.span>1?MOIS[g.start]+'–'+MOIS[g.start+g.span-1]:MOIS[g.start];
+          tbody+='<td colspan="'+g.span+'" style="padding:3px 2px;border-bottom:1px solid #e2e8f0;'+bl+'position:relative;height:46px">'+internalSeps;
+          tbody+='<div title="'+rangeLabel+' : '+g.raw+'" style="position:absolute;top:3px;left:2px;right:2px;bottom:3px;z-index:1;background:'+c.bg+';border:1.5px solid '+c.border+';border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:default;padding:0 2px;overflow:hidden">';
+          if(g.jours){
+            tbody+='<span style="font-size:.62rem;font-weight:800;color:'+c.fg+';line-height:1;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis">'+g.jours+'</span>';
+            tbody+='<span style="font-size:.58rem;font-weight:400;color:'+c.fg+';opacity:.85;line-height:1;white-space:nowrap">'+g.code+'</span>';
+          } else {
+            tbody+='<span style="font-size:.65rem;font-weight:800;color:'+c.fg+';line-height:1;white-space:nowrap">'+g.code+'</span>';
+          }
+          tbody+='</div></td>';
+        }
+        moisIndex+=g.span;
+      });
+      tbody+='</tr>';
+    });
+  });
+  tbody+='<tr><td colspan="14" style="height:4px;padding:0;border-bottom:2px solid #e2e8f0"></td></tr></tbody>';
+
+  return '<div style="margin-bottom:32px">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">'
+    +'<span style="background:#2563eb;color:#fff;padding:5px 18px;border-radius:20px;font-size:.9rem;font-weight:700;letter-spacing:.01em">'+annee+'</span>'
+    +'</div>'
+    +'<div style="overflow-x:auto;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.07)">'
+    +'<table style="width:100%;border-collapse:collapse;background:#fff;min-width:760px">'
+    +thead+tbody
+    +'</table></div></div>';
+}
+
+function renderFrises(){
+  document.getElementById('friseLegende').innerHTML = renderLegende();
+  document.getElementById('friseContent').innerHTML =
+    renderFriseAnnee('2026', CABOURG_R) +
+    renderFriseAnnee('2027', CABOURG_R);
+}
+</script>
+</body>
+</html>
