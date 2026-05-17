@@ -48,7 +48,7 @@ body{font-family:'Inter',sans-serif;background:#f1f5f9;color:#1e293b}
 
 #map{position:fixed;top:0;left:0;right:0;bottom:0;z-index:1}
 
-/* Légende — traits plus épais */
+/* Légende */
 #legend{
   position:fixed;bottom:20px;right:16px;z-index:1000;
   background:#fff;border:1px solid #e2e8f0;border-radius:10px;
@@ -73,14 +73,82 @@ body{font-family:'Inter',sans-serif;background:#f1f5f9;color:#1e293b}
 .ib-val{font-family:'JetBrains Mono',monospace;font-weight:600;color:#1e293b}
 .ib-hint{margin-top:9px;font-size:11px;color:#94a3b8;font-style:italic}
 
-/* Couches colonnes / PDR */
-.btn.layer{border-color:#e2e8f0;color:#64748b;background:#f8fafc}
-.btn.layer:hover{background:#f1f5f9;color:#334155}
-.btn.layer.active-col-omr{background:#6b7280;color:#fff;border-color:#6b7280}
-.btn.layer.active-col-emb{background:#f97316;color:#fff;border-color:#f97316}
-.btn.layer.active-col-verre{background:#16a34a;color:#fff;border-color:#16a34a}
-.btn.layer.active-pdr{background:#7c3aed;color:#fff;border-color:#7c3aed}
-/* Popup colonnes / PDR */
+/* Bouton calendrier */
+.btn.cal{border-color:#1d4ed8;color:#1d4ed8;background:#eff6ff}
+.btn.cal:hover{background:#dbeafe}
+.btn.cal.active{background:#1d4ed8;color:#fff}
+
+/* Bouton couches */
+.btn.couches{border-color:#475569;color:#475569;background:#f1f5f9}
+.btn.couches:hover{background:#e2e8f0}
+.btn.couches.active{background:#0f172a;color:#fff;border-color:#0f172a}
+
+/* Panneau frise */
+#frisePanel{
+  display:none;
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:900;
+  background:#f8fafc;overflow-y:auto;
+  padding-top:60px;
+}
+#friseInner{
+  max-width:1300px;margin:0 auto;padding:24px 28px 48px;
+}
+#frisePanel h2{
+  font-size:1.2rem;font-weight:700;color:#0f172a;
+  display:flex;align-items:center;gap:10px;margin-bottom:18px;
+}
+
+/* ── PANNEAU COUCHES ─────────────────────────────────────────────── */
+#couchesPanel{
+  display:none;
+  position:fixed;top:58px;right:16px;z-index:1001;
+  background:#fff;border:1px solid #e2e8f0;border-radius:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,.13);
+  min-width:240px;max-width:280px;
+  font-family:'Inter',sans-serif;
+  overflow:hidden;
+}
+.cp-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;background:#0f172a;color:#fff;
+  font-size:12px;font-weight:700;letter-spacing:.02em;
+}
+.cp-close{
+  background:none;border:none;color:#94a3b8;cursor:pointer;
+  font-size:16px;line-height:1;padding:0 2px;transition:color .12s;
+}
+.cp-close:hover{color:#fff}
+.cp-group{border-bottom:1px solid #e2e8f0}
+.cp-group:last-child{border-bottom:none}
+.cp-group-head{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 14px;cursor:pointer;
+  font-size:11px;font-weight:700;color:#334155;
+  background:#f8fafc;user-select:none;transition:background .1s;
+}
+.cp-group-head:hover{background:#f1f5f9}
+.cp-group-emoji{font-size:13px}
+.cp-arrow{font-size:10px;margin-left:auto;color:#94a3b8;transition:transform .15s}
+.cp-body{
+  padding:10px 12px;display:flex;flex-wrap:wrap;gap:6px;
+  animation:fadeIn .12s ease;
+}
+.cp-body.collapsed{display:none}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.cp-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 10px;border:1.5px solid #e2e8f0;border-radius:5px;
+  background:#f8fafc;color:#64748b;
+  font-size:11px;font-weight:600;font-family:'Inter',sans-serif;
+  cursor:pointer;transition:all .12s;white-space:nowrap;
+}
+.cp-btn:hover{background:#f1f5f9;border-color:#cbd5e1}
+.cp-dot{
+  width:9px;height:9px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid rgba(0,0,0,.12);
+}
+
+/* Popups */
 .pop-col-badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700;margin-bottom:8px}
 .pop-row{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:#64748b;margin-bottom:3px}
 .pop-row b{color:#1e293b;font-weight:600}
@@ -97,31 +165,11 @@ body{font-family:'Inter',sans-serif;background:#f1f5f9;color:#1e293b}
 .pop-grid{display:grid;grid-template-columns:auto auto 1fr;gap:2px 8px;font-family:'JetBrains Mono',monospace;font-size:10px;margin-bottom:6px}
 .pg-m{color:#94a3b8}.pg-c{font-weight:600}.pg-d{color:#64748b}
 
-/* ── CSS VARS pour les frises (reprises du dashboard) ── */
+/* CSS VARS */
 :root{
   --bg:#f8fafc;--card:#ffffff;--text:#1e293b;--muted:#64748b;
   --accent:#2563eb;--border:#e2e8f0;--radius:8px;
   --shadow:0 1px 4px rgba(0,0,0,.07);
-}
-
-/* ── Bouton frise dans le panel ── */
-.btn.cal{border-color:#1d4ed8;color:#1d4ed8;background:#eff6ff}
-.btn.cal:hover{background:#dbeafe}
-.btn.cal.active{background:#1d4ed8;color:#fff}
-
-/* ── Panneau frise (overlay plein écran par-dessus la carte) ── */
-#frisePanel{
-  display:none;
-  position:fixed;top:0;left:0;right:0;bottom:0;z-index:900;
-  background:#f8fafc;overflow-y:auto;
-  padding-top:60px; /* hauteur du panel */
-}
-#friseInner{
-  max-width:1300px;margin:0 auto;padding:24px 28px 48px;
-}
-#frisePanel h2{
-  font-size:1.2rem;font-weight:700;color:#0f172a;
-  display:flex;align-items:center;gap:10px;margin-bottom:18px;
 }
 </style>
 </head>
@@ -179,19 +227,66 @@ body{font-family:'Inter',sans-serif;background:#f1f5f9;color:#1e293b}
     📅 Calendriers de collecte
   </button>
   <div class="p-sep"></div>
-  <div class="p-grp">
-    <div class="p-lbl">Colonnes enterrées</div>
-    <div class="p-btns">
-      <button class="btn layer" id="btnColOMR" onclick="toggleCouche('col-omr')">⬤ OMR</button>
-      <button class="btn layer" id="btnColEMB" onclick="toggleCouche('col-emb')">⬤ Emballages</button>
-      <button class="btn layer" id="btnColVerre" onclick="toggleCouche('col-verre')">⬤ Verre</button>
+  <button class="btn couches" id="btnCouches" onclick="toggleCouchesPanel()" style="align-self:center">
+    🗂️ Couches de données
+  </button>
+</div>
+
+<!-- PANNEAU COUCHES DE DONNÉES -->
+<div id="couchesPanel">
+  <div class="cp-header">
+    <span>🗂️ Couches de données</span>
+    <button class="cp-close" onclick="toggleCouchesPanel()">✕</button>
+  </div>
+
+  <!-- Groupe : Colonnes & PDR -->
+  <div class="cp-group">
+    <div class="cp-group-head" onclick="toggleGroup('grp-collecte')">
+      <span class="cp-group-emoji">📦</span>
+      <span>Colonnes enterrées &amp; PDR</span>
+      <span class="cp-arrow" id="arr-grp-collecte">▾</span>
+    </div>
+    <div class="cp-body" id="grp-collecte">
+      <button class="cp-btn" id="btnColOMR" data-color="#6b7280" onclick="toggleCouche('col-omr')">
+        <span class="cp-dot" style="background:#6b7280"></span>OMR
+      </button>
+      <button class="cp-btn" id="btnColEMB" data-color="#f97316" onclick="toggleCouche('col-emb')">
+        <span class="cp-dot" style="background:#f97316"></span>Emballages
+      </button>
+      <button class="cp-btn" id="btnColVerre" data-color="#16a34a" onclick="toggleCouche('col-verre')">
+        <span class="cp-dot" style="background:#16a34a"></span>Verre
+      </button>
+      <button class="cp-btn" id="btnPDR" data-color="#7c3aed" onclick="toggleCouche('pdr')">
+        <span class="cp-dot" style="background:#7c3aed"></span>PDR
+      </button>
     </div>
   </div>
-  <div class="p-sep"></div>
-  <div class="p-grp">
-    <div class="p-lbl">Points de regroupement</div>
-    <div class="p-btns">
-      <button class="btn layer" id="btnPDR" onclick="toggleCouche('pdr')">⬤ PDR</button>
+
+  <!-- Groupe : Redevance spéciale -->
+  <div class="cp-group">
+    <div class="cp-group-head" onclick="toggleGroup('grp-rs')">
+      <span class="cp-group-emoji">💶</span>
+      <span>Redevance spéciale</span>
+      <span class="cp-arrow" id="arr-grp-rs">▾</span>
+    </div>
+    <div class="cp-body" id="grp-rs">
+      <button class="cp-btn" id="btnRS" data-color="#f59e0b" onclick="toggleCouche('rs')">
+        <span class="cp-dot" style="background:#f59e0b"></span>Redevables RS
+      </button>
+    </div>
+  </div>
+
+  <!-- Groupe : Conteneurisation -->
+  <div class="cp-group">
+    <div class="cp-group-head" onclick="toggleGroup('grp-nc')">
+      <span class="cp-group-emoji">🏠</span>
+      <span>Conteneurisation</span>
+      <span class="cp-arrow" id="arr-grp-nc">▾</span>
+    </div>
+    <div class="cp-body" id="grp-nc">
+      <button class="cp-btn" id="btnNC" data-color="#ef4444" onclick="toggleCouche('nc')">
+        <span class="cp-dot" style="background:#ef4444"></span>Non conteneurisables
+      </button>
     </div>
   </div>
 </div>
@@ -267,13 +362,374 @@ var STATE={year:2026,flux:"OMR",month:6,fond:"plan"};
 var VOIES_GJ=null;
 var POINTS_GJ=null;
 
+// ══════════════════════════════════════════════════════════════════
+// DONNÉES À COMPLÉTER — depuis AJOUTS_DONNEES.xlsx
+// ══════════════════════════════════════════════════════════════════
+
+var RS_DATA = [
+  {lat:49.290951,lng:-0.114227,nom:'HOTEL SPA LE CASTEL CABOURG',adresse:'4 AVENUE ALFRED PIAT',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.290582,lng:-0.114006,nom:'LE BALIGAN',adresse:'8 AVENUE ALFRED PIAT',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.289392,lng:-0.115780000000001,nom:'BREAK CAFE',adresse:'2 AVENUE CDT BERTAUX LEVILLAIN',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.289639,lng:-0.114273,nom:'HOTEL LA CHAMPAGNE ARDENNES',adresse:'11 AVENUE CDT BERTAUX LEVILLAIN',type:'Professionnel',om_livre:1,tri_livre:0,livrable:''},
+  {lat:49.286305,lng:-0.122830999999999,nom:'GRAND CASINO DE CABOURG GROUPE PARTOUCHE',adresse:'58 AVENUE DE LA BRECHE BUHOT',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.286919,lng:-0.129659,nom:'THALAZUR CABOURG',adresse:'44 AVENUE CHARLES DE GAULLE',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.286414,lng:-0.133011,nom:'VILLAGE VACANCES SWEET HOME',adresse:'62 AVENUE CHARLES DE GAULLE',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.286555,lng:-0.130289,nom:'CCAS ',adresse:'66 AVENUE CHARLES DE GAULLE',type:'Administration',om_livre:0,tri_livre:0,livrable:'BLEU'},
+  {lat:49.286278,lng:-0.134326,nom:'CAMPING - ESPACE DE LOISIRS PIERRE SOISMIER',adresse:'70 AVENUE CHARLES DE GAULLE',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.285409,lng:-0.138897,nom:'OASIS DE CABOURG',adresse:'89 AVENUE CHARLES DE GAULLE',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.289397,lng:-0.115656,nom:'BISTROT DES ARTS',adresse:'4 AVENUE CDT BERTAUX LEVILLAIN',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.292444,lng:-0.114298,nom:'LE SYMBIOSE',adresse:'7 AVENUE JEAN MERMOZ',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.29222,lng:-0.11594,nom:'HASTING S BAR',adresse:'2 AVENUE DE LA MER',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.291698,lng:-0.116002,nom:'DUPONT AVEC UN THE',adresse:'6 AVENUE DE LA MER',type:'Professionnel',om_livre:1,tri_livre:1,livrable:''},
+  {lat:49.291712,lng:-0.115817,nom:'LA TOCADE',adresse:'7 AVENUE DE LA MER',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.291191,lng:-0.116098999999999,nom:'O P TIT LOUIS',adresse:'16 AVENUE DE LA MER',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.29136,lng:-0.115889,nom:'I FRATELLI',adresse:'19 AVENUE DE LA MER',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.290961,lng:-0.116121999999999,nom:'BOULANGERIE CHEZ MEUNIER',adresse:'20 AVENUE DE LA MER',type:'Professionnel',om_livre:1,tri_livre:1,livrable:''},
+  {lat:49.290756,lng:-0.115991,nom:'L EMBARCADERE',adresse:'33 AVENUE DE LA MER',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.290528,lng:-0.116003,nom:'L ATELIER',adresse:'37 AVENUE DE LA MER',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.290339,lng:-0.116030999999999,nom:'HOTEL HENRIETTE',adresse:'39 AVENUE DE LA MER',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.28936,lng:-0.116395999999999,nom:'MAISON BUREK',adresse:'42 AVENUE DE LA MER',type:'Professionnel',om_livre:0,tri_livre:0,livrable:'ROUGE'},
+  {lat:49.28924,lng:-0.116416,nom:'LE CENTRAL',adresse:'44 AVENUE DE LA MER',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.289081,lng:-0.116438999999999,nom:'L OLIVIER',adresse:'46 AVENUE DE LA MER',type:'Professionnel',om_livre:1,tri_livre:0,livrable:''},
+  {lat:49.289158,lng:-0.116231999999999,nom:'CINQ SEPT AVENUE',adresse:'57 AVENUE DE LA MER',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.288973,lng:-0.116253,nom:'LA FACTORY',adresse:'61 AVENUE DE LA MER',type:'Professionnel',om_livre:2,tri_livre:1,livrable:''},
+  {lat:49.288856,lng:-0.116268999999999,nom:'CARREFOUR EXPRESS',adresse:'65 AVENUE DE LA MER',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.287336,lng:-0.114780000000001,nom:'EHPAD LES HELIADES',adresse:'6 E AVENUE DES DUNETTES',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.285409,lng:-0.138897,nom:'CAMPING DE LA POMMERAIE',adresse:'81 AVENUE GUILLAUME LE CONQUERANT',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.279852,lng:-0.143549,nom:'CAMPING LE VERT PRE',adresse:'100 AVENUE GUILLAUME LE CONQUERANT',type:'Professionnel',om_livre:1,tri_livre:0,livrable:''},
+  {lat:49.280479,lng:-0.123092,nom:'HOTEL MERCURE',adresse:'68 AVENUE MICHEL DORNANO',type:'Professionnel',om_livre:3,tri_livre:5,livrable:''},
+  {lat:49.283046,lng:-0.138752,nom:'CAMPING LE TOUCAN',adresse:'270 CHEMIN CAILLOUE',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.290767,lng:-0.116361,nom:'LES TONTONS RALEURS - LES TONTONS ECAILLES',adresse:'2 PAS DURAND MORIMBAU',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.293405,lng:-0.119779,nom:'GRAND HOTEL DE CABOURG - MGALLERY COLLECTION',adresse:'0 PROMENADE MARCEL PROUST',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.293405,lng:-0.119779,nom:'L ENCAS',adresse:'4 PROMENADE MARCEL PROUST',type:'Professionnel',om_livre:0,tri_livre:2,livrable:''},
+  {lat:49.293405,lng:-0.119779,nom:'LE BIQUET S',adresse:'0 PROMENADE MARCEL PROUST',type:'Professionnel',om_livre:2,tri_livre:0,livrable:''},
+  {lat:49.293405,lng:-0.119779,nom:'CAFE DE LA DIGUE',adresse:'0 PROMENADE MARCEL PROUST',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.292696,lng:-0.120846,nom:'LE BEAU SITE',adresse:'30 AVENUE DU MARECHAL FOCH',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.290725,lng:-0.11338,nom:'AROMA ',adresse:'2 AVENUE DES FRERES HURTAUD',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+  {lat:49.285368,lng:-0.124796999999999,nom:'AQUADIVA',adresse:'11 AVENUE GUILLAUME LE CONQUERANT',type:'Professionnel',om_livre:0,tri_livre:0,livrable:''},
+];
+
+var NC_DATA = [
+  {lat:49.28952,lng:-0.115672,adresse:'3 AVENUE CDT BERTAUX LEVILLAIN',type:'Professionnel'},
+  {lat:49.289578,lng:-0.113923,adresse:'17 AVENUE DU MARCHE',type:'Copropriété'},
+  {lat:49.289712,lng:-0.113867999999999,adresse:'13 AVENUE CDT BERTAUX LEVILLAIN',type:'Professionnel'},
+  {lat:49.285811,lng:-0.136149,adresse:'81 AVENUE CHARLES DE GAULLE',type:'Professionnel'},
+  {lat:49.285616,lng:-0.137437,adresse:'83 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.290339,lng:-0.115657,adresse:'2 AVENUE DE BAVENT',type:'Gîte'},
+  {lat:49.289536,lng:-0.115098999999999,adresse:'5 AVENUE CDT BERTAUX LEVILLAIN',type:'Professionnel'},
+  {lat:49.289581,lng:-0.115431,adresse:'11 B AVENUE DE BAVENT',type:'Professionnel'},
+  {lat:49.289611,lng:-0.115435,adresse:'11 B AVENUE DE BAVENT',type:'Professionnel'},
+  {lat:49.289734,lng:-0.115459,adresse:'11 B AVENUE DE BAVENT',type:'Professionnel'},
+  {lat:49.289881,lng:-0.115637,adresse:'12 AVENUE DE BAVENT',type:'Copropriété'},
+  {lat:49.289881,lng:-0.115637,adresse:'12 AVENUE DE BAVENT',type:'Copropriété'},
+  {lat:49.289424,lng:-0.115515,adresse:'40 AVENUE DE BAVENT',type:'Professionnel'},
+  {lat:49.288248,lng:-0.123142,adresse:'23 AVENUE DE LA BRECHE BUHOT',type:'Maison partagée'},
+  {lat:49.288113,lng:-0.123103999999999,adresse:'25 AVENUE DE LA BRECHE BUHOT',type:'Copropriété'},
+  {lat:49.288113,lng:-0.123104,adresse:'25 AVENUE DE LA BRECHE BUHOT',type:'Copropriété'},
+  {lat:49.288113,lng:-0.123104,adresse:'25 AVENUE DE LA BRECHE BUHOT',type:'Copropriété'},
+  {lat:49.292297,lng:-0.115671,adresse:'1 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.291611,lng:-0.116029,adresse:'8 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.291563,lng:-0.115844,adresse:'11 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.29131,lng:-0.116064,adresse:'12 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.29134,lng:-0.116059,adresse:'12 AVENUE DE LA MER',type:'Collectivité'},
+  {lat:49.29152,lng:-0.115848,adresse:'13 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.291275,lng:-0.116075,adresse:'14 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.291409,lng:-0.115858,adresse:'17 AVENUE DE LA MER',type:'Copropriété'},
+  {lat:49.291409,lng:-0.115858,adresse:'17 AVENUE DE LA MER',type:'Copropriété'},
+  {lat:49.291116,lng:-0.115928,adresse:'23 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.29116,lng:-0.115925,adresse:'23 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.289978,lng:-0.116291,adresse:'34 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.28936,lng:-0.116395999999999,adresse:'42 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.288999,lng:-0.116485,adresse:'46 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.288931,lng:-0.116461,adresse:'48 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.28897,lng:-0.116481000000001,adresse:'48 AVENUE DE LA MER',type:'Copropriété'},
+  {lat:49.288999,lng:-0.116485,adresse:'48 AVENUE DE LA MER',type:'Copropriété'},
+  {lat:49.288892,lng:-0.116464,adresse:'50 AVENUE DE LA MER',type:'Copropriété'},
+  {lat:49.288837,lng:-0.116473,adresse:'52 AVENUE DE LA MER',type:'Copropriété'},
+  {lat:49.288837,lng:-0.116473,adresse:'52 AVENUE DE LA MER',type:'Copropriété'},
+  {lat:49.288779,lng:-0.116484,adresse:'56 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.289208,lng:-0.116235999999999,adresse:'57 AVENUE DE LA MER',type:'Collectivité'},
+  {lat:49.289208,lng:-0.116236,adresse:'57 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.288716,lng:-0.1165,adresse:'60 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.288541,lng:-0.116321,adresse:'75 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.28837,lng:-0.116357,adresse:'79 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.290482,lng:-0.117269,adresse:'2 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290451,lng:-0.117293999999999,adresse:'4 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290225,lng:-0.11726,adresse:'5 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290385,lng:-0.117349999999999,adresse:'6 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290209,lng:-0.117273,adresse:'7 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290209,lng:-0.117273,adresse:'7 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290209,lng:-0.117273,adresse:'7 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290209,lng:-0.117273,adresse:'7 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290252,lng:-0.117436,adresse:'8 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290119,lng:-0.117535,adresse:'10 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290119,lng:-0.117535,adresse:'10 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290143,lng:-0.117316999999999,adresse:'11 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290044,lng:-0.117588999999999,adresse:'12 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290044,lng:-0.117589,adresse:'12 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290122,lng:-0.117337,adresse:'13 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.2893,lng:-0.118117,adresse:'14 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290083,lng:-0.117359999999999,adresse:'15 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.289234,lng:-0.118163,adresse:'16 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290024,lng:-0.117402,adresse:'17 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.289952,lng:-0.117453000000001,adresse:'19 AVENUE DE VARAVILLE',type:'Copropriété'},
+  {lat:49.289952,lng:-0.117453,adresse:'19 AVENUE DE VARAVILLE',type:'Copropriété'},
+  {lat:49.289935,lng:-0.117467000000001,adresse:'21 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.289403,lng:-0.117836,adresse:'25 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.289268,lng:-0.117944,adresse:'27 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.289066,lng:-0.118086000000001,adresse:'29 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.285611,lng:-0.139275,adresse:'2 AVENUE DES DEVISES',type:'Professionnel'},
+  {lat:49.288324,lng:-0.115389,adresse:'9 AVENUE DES DUNETTES',type:'Maison partagée'},
+  {lat:49.288695,lng:-0.114043,adresse:'14 AVENUE DES DUNETTES',type:'Professionnel'},
+  {lat:49.293943,lng:-0.114705,adresse:'3 AVENUE DU COMMANDANT TOUCHARD',type:'Professionnel'},
+  {lat:49.289554,lng:-0.116478999999999,adresse:'2 AVENUE DU GENERAL DE CASTELNAU',type:'Professionnel'},
+  {lat:49.286754,lng:-0.115931,adresse:'27 B AVENUE DU GENERAL LECLERC',type:'Maison partagée'},
+  {lat:49.286778,lng:-0.116091000000001,adresse:'29 AVENUE DU GENERAL LECLERC',type:'Maison partagée'},
+  {lat:49.286782,lng:-0.116208999999999,adresse:'31 AVENUE DU GENERAL LECLERC',type:'Professionnel'},
+  {lat:49.286794,lng:-0.116364999999999,adresse:'33 AVENUE DU GENERAL LECLERC',type:'Professionnel'},
+  {lat:49.280805,lng:-0.140449,adresse:'154 AVENUE GUILLAUME LE CONQUERANT',type:'Professionnel'},
+  {lat:49.294156,lng:-0.114628,adresse:'2 AVENUE JEAN MERMOZ',type:'Professionnel'},
+  {lat:49.294118,lng:-0.114621,adresse:'2 AVENUE JEAN MERMOZ',type:'Copropriété'},
+  {lat:49.294156,lng:-0.114628,adresse:'2 AVENUE JEAN MERMOZ',type:'Copropriété'},
+  {lat:49.294156,lng:-0.114628,adresse:'2 AVENUE JEAN MERMOZ',type:'Copropriété'},
+  {lat:49.294057,lng:-0.114601,adresse:'4 AVENUE JEAN MERMOZ',type:'Copropriété'},
+  {lat:49.294077,lng:-0.114606,adresse:'4 AVENUE JEAN MERMOZ',type:'Copropriété'},
+  {lat:49.294077,lng:-0.114606,adresse:'4 AVENUE JEAN MERMOZ',type:'Copropriété'},
+  {lat:49.289028,lng:-0.110183,adresse:'6 RUE ANDRE MARIE AMPERE',type:'Professionnel'},
+  {lat:49.290522,lng:-0.115769,adresse:'3 AVENUE PRESIDENT RAYMOND POINCARE',type:'Professionnel'},
+  {lat:49.291128,lng:-0.115642,adresse:'15 IMPASSE DE BAVENT',type:'Maison partagée'},
+  {lat:49.291128,lng:-0.115642,adresse:'25 IMPASSE DE BAVENT',type:'Copropriété'},
+  {lat:49.291128,lng:-0.115642,adresse:'25 IMPASSE DE BAVENT',type:'Copropriété'},
+  {lat:49.292574,lng:-0.112822,adresse:'1 IMPASSE DE L ILE',type:'Copropriété'},
+  {lat:49.292415,lng:-0.112264,adresse:'4 IMPASSE DE L ILE',type:'Copropriété'},
+  {lat:49.292415,lng:-0.112264,adresse:'4 IMPASSE DE L ILE',type:'Copropriété'},
+  {lat:49.292415,lng:-0.112264,adresse:'4 IMPASSE DE L ILE',type:'Copropriété'},
+  {lat:49.292415,lng:-0.112264,adresse:'4 IMPASSE DE L ILE',type:'Copropriété'},
+  {lat:49.292415,lng:-0.112264,adresse:'4 IMPASSE DE L ILE',type:'Copropriété'},
+  {lat:49.29038,lng:-0.108730999999999,adresse:'1 B IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.290521,lng:-0.108339000000001,adresse:'1 IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.290415,lng:-0.108407999999999,adresse:'1 T IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.290285,lng:-0.108654,adresse:'2 IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.290374,lng:-0.108833,adresse:'2 B IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.290567,lng:-0.108216000000001,adresse:'3 IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.290435,lng:-0.108194,adresse:'3 T IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.290196,lng:-0.108243,adresse:'4 IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.290308,lng:-0.108468999999999,adresse:'5 IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.290214,lng:-0.108348,adresse:'7 IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.290167,lng:-0.108394000000001,adresse:'8 IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.290205,lng:-0.108254,adresse:'9 IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.29006,lng:-0.108157999999999,adresse:'10 IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.290078,lng:-0.108053,adresse:'11 IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.290078,lng:-0.108053,adresse:'11 IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.289849,lng:-0.107711999999999,adresse:'14 IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.289806,lng:-0.107623000000001,adresse:'16 IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.289788,lng:-0.107586999999999,adresse:'18 IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.290196,lng:-0.108243,adresse:'19 IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.290435,lng:-0.108193999999999,adresse:'3 TER IMPASSE DE LA LIBERATION',type:'Maison partagée'},
+  {lat:49.291456,lng:-0.116435,adresse:'1 IMPASSE DE VARAVILLE',type:'Copropriété'},
+  {lat:49.291362,lng:-0.116497999999999,adresse:'1 IMPASSE DE VARAVILLE',type:'Copropriété'},
+  {lat:49.291456,lng:-0.116435,adresse:'1 IMPASSE DE VARAVILLE',type:'Copropriété'},
+  {lat:49.291456,lng:-0.116435,adresse:'1 IMPASSE DE VARAVILLE',type:'Copropriété'},
+  {lat:49.291456,lng:-0.116435,adresse:'1 IMPASSE DE VARAVILLE',type:'Copropriété'},
+  {lat:49.291389,lng:-0.116589999999999,adresse:'2 IMPASSE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.291294,lng:-0.116547,adresse:'3 IMPASSE DE VARAVILLE',type:'Copropriété'},
+  {lat:49.291294,lng:-0.116547,adresse:'3 IMPASSE DE VARAVILLE',type:'Copropriété'},
+  {lat:49.291294,lng:-0.116547,adresse:'3 IMPASSE DE VARAVILLE',type:'Copropriété'},
+  {lat:49.29105,lng:-0.116821000000001,adresse:'4 IMPASSE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.29105,lng:-0.116821,adresse:'4 IMPASSE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290918,lng:-0.116914,adresse:'8 IMPASSE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290918,lng:-0.116914,adresse:'8 IMPASSE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.286264,lng:-0.118093,adresse:'1 PLACE DE L EGLISE',type:'Professionnel'},
+  {lat:49.287868,lng:-0.110726,adresse:'7 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.28779,lng:-0.110291,adresse:'11 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287778,lng:-0.110257,adresse:'13 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.284169,lng:-0.115969,adresse:'15 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287754,lng:-0.110634,adresse:'16 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.285088,lng:-0.113619,adresse:'17 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.284835,lng:-0.114328,adresse:'18 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.28497,lng:-0.114034,adresse:'21 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.292245,lng:-0.111763,adresse:'22 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.28489,lng:-0.114104,adresse:'23 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.292499,lng:-0.111661,adresse:'24 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.284854,lng:-0.114135,adresse:'25 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'26 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.28349,lng:-0.11633,adresse:'31 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.290944,lng:-0.122687,adresse:'32 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.283429,lng:-0.116377,adresse:'33 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.290834,lng:-0.123138,adresse:'34 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'35 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.290806,lng:-0.123259,adresse:'36 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'37 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.290766,lng:-0.12345,adresse:'38 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'41 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'42 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'43 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'44 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'45 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'46 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'51 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'52 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'53 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'54 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'55 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'61 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'62 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'63 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'64 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'65 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'71 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'72 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'73 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'74 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'75 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'76 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'77 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'78 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'81 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'82 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'83 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.287953,lng:-0.110938,adresse:'84 RESIDENCE CABOURG COTTAGE',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'1 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'2 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'3 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'4 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'5 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'6 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'7 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'8 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'9 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'10 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'11 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'12 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'13 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'14 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'15 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'16 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'17 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'18 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'19 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'20 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'21 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'22 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'23 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'24 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'25 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'26 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'27 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'28 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'29 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'31 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'32 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'33 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'34 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'35 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'36 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'37 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'38 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'39 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'40 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'41 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'42 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'43 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'44 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'45 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'46 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'47 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'48 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'49 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'50 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'51 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'52 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'53 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'54 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'55 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'56 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'57 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'58 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'59 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'60 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'61 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'62 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'63 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'64 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'65 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'66 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'67 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'68 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'69 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'70 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'71 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'72 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'73 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'74 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'75 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'76 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'77 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'78 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'79 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'80 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'81 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'82 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'83 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'84 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.2901505,lng:-0.1258734,adresse:'85 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.285225,lng:-0.133465,adresse:'10 RESIDENCE HORTENSIA',type:'Maison partagée'},
+  {lat:49.291754,lng:-0.110377,adresse:'4 RESIDENCE LES HAMEAUX DU PORT',type:'Maison partagée'},
+  {lat:49.291754,lng:-0.110377,adresse:'4 RESIDENCE LES HAMEAUX DU PORT',type:'Maison partagée'},
+  {lat:49.291754,lng:-0.110377,adresse:'4 RESIDENCE LES HAMEAUX DU PORT',type:'Maison partagée'},
+  {lat:49.291754,lng:-0.110377,adresse:'4 RESIDENCE LES HAMEAUX DU PORT',type:'Maison partagée'},
+  {lat:49.291817,lng:-0.110187,adresse:'6 RESIDENCE LES HAMEAUX DU PORT',type:'Maison partagée'},
+  {lat:49.291817,lng:-0.110187,adresse:'6 RESIDENCE LES HAMEAUX DU PORT',type:'Maison partagée'},
+  {lat:49.291817,lng:-0.110187,adresse:'6 RESIDENCE LES HAMEAUX DU PORT',type:'Maison partagée'},
+  {lat:49.291817,lng:-0.110187,adresse:'6 RESIDENCE LES HAMEAUX DU PORT',type:'Maison partagée'},
+  {lat:49.284949,lng:-0.11364,adresse:'17 BIS RUE DU COMMERCE',type:'Professionnel'},
+  {lat:49.281273,lng:-0.140193,adresse:'13 B RESIDENCE LE FRONT DE MER',type:'Maison partagée'},
+  {lat:49.281273,lng:-0.140193,adresse:'13 B RESIDENCE LE FRONT DE MER',type:'Maison partagée'},
+  {lat:49.281273,lng:-0.140193,adresse:'13 B RESIDENCE LE FRONT DE MER',type:'Maison partagée'},
+  {lat:49.281273,lng:-0.140193,adresse:'13 B RESIDENCE LE FRONT DE MER',type:'Maison partagée'},
+  {lat:49.281273,lng:-0.140193,adresse:'13 B RESIDENCE LE FRONT DE MER',type:'Maison partagée'},
+  {lat:49.290099,lng:-0.115457,adresse:'1 B AVENUE DE BAVENT',type:'Collectivité'},
+  {lat:49.288369,lng:-0.114783999999999,adresse:'10 AVENUE DES DUNETTES',type:'Collectivité'},
+  {lat:49.289838,lng:-0.116979,adresse:'12 AVENUE DE TROARN',type:'Collectivité'},
+  {lat:49.292413,lng:-0.121659999999999,adresse:'19 AVENUE DU MARECHAL FOCH',type:'Collectivité'},
+  {lat:49.29325,lng:-0.112322,adresse:'19 PLACE MARCEL PROUST',type:'Collectivité'},
+  {lat:49.291218,lng:-0.115919,adresse:'21 AVENUE DE LA MER',type:'Collectivité'},
+  {lat:49.290905,lng:-0.116133,adresse:'22 AVENUE DE LA MER',type:'Collectivité'},
+  {lat:49.292985,lng:-0.113504,adresse:'3 PLACE MARCEL PROUST',type:'Collectivité'},
+  {lat:49.294886,lng:-0.110949999999999,adresse:'31 AVENUE DU COMMANDANT TOUCHARD',type:'Collectivité'},
+  {lat:49.2852,lng:-0.121243000000001,adresse:'6 AVENUE DE LA DIVETTE',type:'Collectivité'},
+  {lat:49.28606,lng:-0.135266,adresse:'76 AVENUE CHARLES DE GAULLE',type:'Collectivité'},
+  {lat:49.288252,lng:-0.116387999999999,adresse:'81 AVENUE DE LA MER',type:'Collectivité'},
+  {lat:49.288252,lng:-0.116388,adresse:'81 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.288197,lng:-0.116622999999999,adresse:'64 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.289534,lng:-0.115888000000001,adresse:'1 AVENUE CDT BERTAUX LEVILLAIN',type:'Professionnel'},
+  {lat:49.289524,lng:-0.116149000000001,adresse:'53 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.28952,lng:-0.115824,adresse:'1 AVENUE CDT BERTAUX LEVILLAIN',type:'Professionnel'},
+  {lat:49.289523,lng:-0.115955000000001,adresse:'1 BIS AVENUE CDT BERTAUX LEVILLAIN',type:'Professionnel'},
+  {lat:49.28942,lng:-0.114959,adresse:'8 AVENUE CDT BERTAUX LEVILLAIN',type:'Professionnel'},
+  {lat:49.290615,lng:-0.116545999999999,adresse:'2 AVENUE DE LA REPUBLIQUE',type:'Professionnel'},
+  {lat:49.2906,lng:-0.116469,adresse:'2 AVENUE DE LA REPUBLIQUE',type:'Professionnel'},
+  {lat:49.290563,lng:-0.116285,adresse:'2 AVENUE DE LA REPUBLIQUE',type:'Professionnel'},
+  {lat:49.289806,lng:-0.116128,adresse:'49 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.289558,lng:-0.116381,adresse:'40 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.288487,lng:-0.116547999999999,adresse:'62 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.290255,lng:-0.117238999999999,adresse:'3 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.2902689,lng:-0.1172787,adresse:'1 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.290182,lng:-0.117291,adresse:'9 AVENUE DE VARAVILLE',type:'Maison partagée'},
+  {lat:49.289845,lng:-0.116123,adresse:'49 AVENUE DE LA MER',type:'Professionnel'},
+  {lat:49.294395,lng:-0.10884,adresse:'34 T AVENUE DU MARECHAL JOFFRE',type:'Collectivité'},
+  {lat:49.294985,lng:-0.111087,adresse:'27 AVENUE DU COMMANDANT TOUCHARD',type:'Collectivité'},
+  {lat:49.288351,lng:-0.112565,adresse:'26 AVENUE ALFRED PIAT',type:'Collectivité'},
+  {lat:49.288717,lng:-0.113219,adresse:'16 AVENUE DU MARCHE',type:'Collectivité'},
+];
+
+// ══════════════════════════════════════════════════════════════════
+
 function pc(raw){return raw.split(" ")[0];}
 function pd(raw){return raw.split(" ").slice(1).join(" ");}
 function gc(code){return COLORS[code]||"#94a3b8";}
 function gp(props,year){var k=year===2026?"collecte_renf_26":"collecte_renf_27";return props[k]==="Oui"?"PARTICULIERS":"COMMUNE";}
 function gf(p,y,fl,m){return FREQ[y][p][fl][m];}
-
-// Label d'affichage : remplace "PARTICULIERS" par "Cas particuliers"
 function labelProfil(p){return p==="PARTICULIERS"?"Cas particuliers":"Commune";}
 
 var tPlan=L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{attribution:"© OpenStreetMap © CartoDB",maxZoom:19});
@@ -296,7 +752,6 @@ function renderVoies(){
     onEachFeature:function(f,layer){
       layer.on("click",function(e){
         var nom=f.properties["_Nom de voie"]||f.properties["nom_voie_ban_gauche"]||"Voie sans nom";
-        var p=gp(f.properties,STATE.year);
         openVoiePopup(e.latlng,nom,f.properties);
       });
       layer.on("mouseover",function(){this.setStyle({weight:this.options.weight+2});});
@@ -419,7 +874,7 @@ function setFond(f){
 }
 function refresh(){renderVoies();renderPoints();updateInfoBox();}
 
-// Chargement des données géographiques externes
+// Chargement données géographiques
 Promise.all([
   fetch('voies.geojson').then(function(r){return r.json();}),
   fetch('points.geojson').then(function(r){return r.json();}),
@@ -436,15 +891,15 @@ Promise.all([
   console.error('Erreur chargement GeoJSON:', err);
 });
 
-// ── COUCHES COLONNES & PDR ─────────────────────────────────────────────
+// ── COUCHES ────────────────────────────────────────────────────────
 
-var COUCHES = { 'col-omr': null, 'col-emb': null, 'col-verre': null, 'pdr': null };
-var COUCHES_VISIBLE = { 'col-omr': false, 'col-emb': false, 'col-verre': false, 'pdr': false };
+var COUCHES = { 'col-omr': null, 'col-emb': null, 'col-verre': null, 'pdr': null, 'rs': null, 'nc': null };
+var COUCHES_VISIBLE = { 'col-omr': false, 'col-emb': false, 'col-verre': false, 'pdr': false, 'rs': false, 'nc': false };
 
 var FLUX_CONFIG = {
-  'OMR':                 { key:'col-omr',   btn:'btnColOMR',    color:'#6b7280', label:'OMR',              activeClass:'active-col-omr'  },
-  'EMBALLAGES ET PAPIERS':{ key:'col-emb',  btn:'btnColEMB',    color:'#f97316', label:'Emballages/Papiers',activeClass:'active-col-emb'  },
-  'VERRE':               { key:'col-verre', btn:'btnColVerre',  color:'#16a34a', label:'Verre',            activeClass:'active-col-verre' }
+  'OMR':                  { key:'col-omr',   color:'#6b7280', label:'OMR' },
+  'EMBALLAGES ET PAPIERS':{ key:'col-emb',   color:'#f97316', label:'Emballages/Papiers' },
+  'VERRE':                { key:'col-verre', color:'#16a34a', label:'Verre' }
 };
 
 var DEVENIR_CONFIG = {
@@ -454,33 +909,27 @@ var DEVENIR_CONFIG = {
   'A DECIDER':  { bg:'#f3e8ff', fg:'#7c3aed' }
 };
 
+function makeCluster(color) {
+  return L.markerClusterGroup({
+    maxClusterRadius: 40,
+    iconCreateFunction: function(c) {
+      return L.divIcon({
+        html: '<div style="background:'+color+';color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;border:2px solid rgba(255,255,255,.7);box-shadow:0 2px 6px rgba(0,0,0,.25)">'+c.getChildCount()+'</div>',
+        className:'', iconSize:[32,32]
+      });
+    }
+  });
+}
+
 function initCouches(colonnesGJ, pdrGJ) {
-  // Séparer les colonnes par flux
+  // Colonnes par flux
   ['OMR','EMBALLAGES ET PAPIERS','VERRE'].forEach(function(flux) {
     var cfg = FLUX_CONFIG[flux];
     var subset = { type:'FeatureCollection', features: colonnesGJ.features.filter(function(f){ return f.properties.FLUX === flux; }) };
-
-    // Cluster pour chaque flux
-    var cluster = L.markerClusterGroup({
-      maxClusterRadius: 40,
-      iconCreateFunction: function(c) {
-        return L.divIcon({
-          html: '<div style="background:'+cfg.color+';color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;border:2px solid rgba(255,255,255,.7);box-shadow:0 2px 6px rgba(0,0,0,.25)">'+c.getChildCount()+'</div>',
-          className:'', iconSize:[32,32]
-        });
-      }
-    });
-
+    var cluster = makeCluster(cfg.color);
     L.geoJSON(subset, {
       pointToLayer: function(f, latlng) {
-        return L.circleMarker(latlng, {
-          radius: 9,
-          fillColor: cfg.color,
-          color: '#fff',
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.9
-        });
+        return L.circleMarker(latlng, { radius:9, fillColor:cfg.color, color:'#fff', weight:2, opacity:1, fillOpacity:0.9 });
       },
       onEachFeature: function(f, layer) {
         var p = f.properties;
@@ -493,23 +942,15 @@ function initCouches(colonnesGJ, pdrGJ) {
         layer.bindPopup(popup, {maxWidth:280});
       }
     }).addTo(cluster);
-
     COUCHES[cfg.key] = cluster;
   });
 
-  // Couche PDR
+  // PDR
   var pdrLayer = L.geoJSON(pdrGJ, {
     pointToLayer: function(f, latlng) {
       var dev = f.properties['DEVENIR'] || '';
       var cfg2 = DEVENIR_CONFIG[dev] || { bg:'#e2e8f0', fg:'#64748b' };
-      return L.circleMarker(latlng, {
-        radius: 10,
-        fillColor: cfg2.bg,
-        color: '#7c3aed',
-        weight: 2.5,
-        opacity: 1,
-        fillOpacity: 1
-      });
+      return L.circleMarker(latlng, { radius:10, fillColor:cfg2.bg, color:'#7c3aed', weight:2.5, opacity:1, fillOpacity:1 });
     },
     onEachFeature: function(f, layer) {
       var p = f.properties;
@@ -531,8 +972,65 @@ function initCouches(colonnesGJ, pdrGJ) {
     }
   });
   COUCHES['pdr'] = pdrLayer;
+
+  // Redevables RS et Non conteneurisables
+  initCoucheRS();
+  initCoucheNC();
 }
 
+// ── REDEVANCE SPÉCIALE ──────────────────────────────────────────────
+function initCoucheRS() {
+  var cluster = makeCluster('#f59e0b');
+  if (RS_DATA && RS_DATA.length > 0) {
+    RS_DATA.forEach(function(d) {
+      var marker = L.circleMarker([d.lat, d.lng], {
+        radius: 9,
+        fillColor: '#f59e0b',
+        color: '#d97706',
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.9
+      });
+      var livBadge = d.livrable ? '<span style="display:inline-block;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:700;background:'+(d.livrable==='ROUGE'?'#fee2e2':'#dcfce7')+';color:'+(d.livrable==='ROUGE'?'#b91c1c':'#15803d')+'">'+d.livrable+'</span>' : '';
+      var popup = '<div class="pop-name">💶 '+d.nom+'</div>'
+        + '<div class="pop-type">Redevance spéciale</div>'
+        + '<div class="pop-row"><span>Adresse</span><b>'+d.adresse+'</b></div>'
+        + '<div class="pop-row"><span>Type</span><b>'+d.type+'</b></div>'
+        + '<div class="pop-row"><span>Bacs OM livrés</span><b>'+d.om_livre+'</b></div>'
+        + '<div class="pop-row"><span>Bacs TRI livrés</span><b>'+d.tri_livre+'</b></div>'
+        + (livBadge ? '<div class="pop-row"><span>Livrable</span><b>'+livBadge+'</b></div>' : '');
+      marker.bindPopup(popup, {maxWidth:280});
+      cluster.addLayer(marker);
+    });
+  }
+  COUCHES['rs'] = cluster;
+}
+
+// ── NON CONTENEURISABLES ────────────────────────────────────────────
+function initCoucheNC() {
+  var cluster = makeCluster('#ef4444');
+  if (NC_DATA && NC_DATA.length > 0) {
+    NC_DATA.forEach(function(d) {
+      var marker = L.circleMarker([d.lat, d.lng], {
+        radius: 9,
+        fillColor: '#ef4444',
+        color: '#dc2626',
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.9
+      });
+      var popup = '<div class="pop-name">🏠 Non conteneurisable</div>'
+        + '<div class="pop-type">Adresse sans bac possible</div>'
+        + '<div class="pop-row"><span>Adresse</span><b>'+d.adresse+'</b></div>'
+        + '<div class="pop-row"><span>Type</span><b>'+d.type+'</b></div>';
+      marker.bindPopup(popup, {maxWidth:280});
+      cluster.addLayer(marker);
+    });
+  }
+  COUCHES['nc'] = cluster;
+}
+
+// ── TOGGLE COUCHE ───────────────────────────────────────────────────
 function toggleCouche(key) {
   var visible = COUCHES_VISIBLE[key];
   var layer = COUCHES[key];
@@ -546,28 +1044,53 @@ function toggleCouche(key) {
     COUCHES_VISIBLE[key] = true;
   }
 
-  // Mettre à jour le bouton
-  var btnId = { 'col-omr':'btnColOMR', 'col-emb':'btnColEMB', 'col-verre':'btnColVerre', 'pdr':'btnPDR' }[key];
-  var activeClass = { 'col-omr':'active-col-omr', 'col-emb':'active-col-emb', 'col-verre':'active-col-verre', 'pdr':'active-pdr' }[key];
-  var btn = document.getElementById(btnId);
-  if (!COUCHES_VISIBLE[key]) {
-    btn.classList.remove('layer', activeClass);
-    btn.classList.add('layer');
+  var btnMap = {
+    'col-omr':  'btnColOMR',
+    'col-emb':  'btnColEMB',
+    'col-verre':'btnColVerre',
+    'pdr':      'btnPDR',
+    'rs':       'btnRS',
+    'nc':       'btnNC'
+  };
+  var btn = document.getElementById(btnMap[key]);
+  if (!btn) return;
+  var activeColor = btn.getAttribute('data-color') || '#1d4ed8';
+  if (COUCHES_VISIBLE[key]) {
+    btn.style.background = activeColor;
+    btn.style.color = '#fff';
+    btn.style.borderColor = activeColor;
   } else {
-    btn.classList.add(activeClass);
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.borderColor = '';
   }
 }
 
-// ── FRISES ────────────────────────────────────────────────────────────
+// ── PANNEAU COUCHES ─────────────────────────────────────────────────
+function toggleCouchesPanel() {
+  var panel = document.getElementById('couchesPanel');
+  var btn   = document.getElementById('btnCouches');
+  var visible = panel.style.display === 'block';
+  panel.style.display = visible ? 'none' : 'block';
+  btn.classList.toggle('active', !visible);
+}
 
-// Données Cabourg construites depuis FREQ
+function toggleGroup(id) {
+  var body  = document.getElementById(id);
+  var arrow = document.getElementById('arr-' + id);
+  var collapsed = body.classList.toggle('collapsed');
+  if (arrow) arrow.textContent = collapsed ? '▸' : '▾';
+}
+
+// ── FRISES ──────────────────────────────────────────────────────────
+
 var CABOURG_CJOURS = {
   "2026":{
-    commune:    { OMR: FREQ[2026].COMMUNE.OMR,     TRI: FREQ[2026].COMMUNE.TRI },
+    commune:     { OMR: FREQ[2026].COMMUNE.OMR,     TRI: FREQ[2026].COMMUNE.TRI },
     particuliers:{ OMR: FREQ[2026].PARTICULIERS.OMR, TRI: FREQ[2026].PARTICULIERS.TRI }
   },
   "2027":{
-    commune:    { OMR: FREQ[2027].COMMUNE.OMR,     TRI: FREQ[2027].COMMUNE.TRI },
+    commune:     { OMR: FREQ[2027].COMMUNE.OMR,     TRI: FREQ[2027].COMMUNE.TRI },
     particuliers:{ OMR: FREQ[2027].PARTICULIERS.OMR, TRI: FREQ[2027].PARTICULIERS.TRI }
   }
 };
