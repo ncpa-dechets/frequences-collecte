@@ -171,6 +171,60 @@ body{font-family:'Inter',sans-serif;background:#f1f5f9;color:#1e293b}
   --accent:#2563eb;--border:#e2e8f0;--radius:8px;
   --shadow:0 1px 4px rgba(0,0,0,.07);
 }
+
+/* ── SECTION VOIES PARTICULIÈRES ───────────────────────────────── */
+#voiesSection {
+  margin-top: 36px;
+}
+.voies-title {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+}
+.voies-title h3 {
+  font-size: .85rem; font-weight: 700; color: #1e293b;
+  display: flex; align-items: center; gap: 7px;
+}
+.voies-title h3 span.voies-icon { font-size: 1rem; }
+.voies-legend {
+  display: flex; align-items: center; gap: 16px;
+  font-size: .68rem; color: #64748b;
+}
+.voies-legend-item { display: flex; align-items: center; gap: 5px; font-weight: 500; }
+.v-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.v-dot.both  { background: #10b981; border: 1.5px solid rgba(0,0,0,.12); }
+.v-dot.only  { background: #cbd5e1; border: 1.5px solid rgba(0,0,0,.10); }
+.voies-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+.voies-col {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.07); overflow: hidden;
+}
+.voies-col-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px;
+  font-size: .7rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+  color: #fff;
+}
+.voies-col-head.actuelle  { background: #1d4ed8; }
+.voies-col-head.avenir    { background: #7c3aed; }
+.voies-col-head .vc-count {
+  background: rgba(255,255,255,.22); padding: 2px 9px; border-radius: 10px;
+  font-size: .68rem; font-weight: 700;
+}
+.voies-list { padding: 6px 0; }
+.voies-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 16px; font-size: .78rem; color: #334155;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background .12s;
+}
+.voies-item:last-child { border-bottom: none; }
+.voies-item:hover { background: #f8fafc; }
+@media (max-width: 700px) {
+  .voies-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
@@ -306,6 +360,7 @@ body{font-family:'Inter',sans-serif;background:#f1f5f9;color:#1e293b}
     </h2>
     <div id="friseLegende"></div>
     <div id="friseContent"></div>
+    <div id="voiesSection"></div>
   </div>
 </div>
 
@@ -1272,11 +1327,97 @@ function renderFriseAnnee(annee, r){
     +'</table></div></div>';
 }
 
+var VOIES_PARTICULIERES = {
+  actuellement: [
+    "Avenue de la Mer",
+    "Jardins du Casino",
+    "Avenue de Troarn",
+    "Avenue de Bavent",
+    "Avenue du Marché",
+    "Impasse de Varaville",
+    "Impasse Bavent",
+    "Le Beau Site (Avenue Maréchal Foch)",
+    "Le Biquets (Avenue de la Brèche Buhot)"
+  ],
+  avenir: [
+    "Avenue de la Mer",
+    "Jardins du Casino",
+    "Avenue de Troarn",
+    "Avenue de Bavent",
+    "Avenue du Marché",
+    "Impasse de Varaville",
+    "Impasse Bavent",
+    "Avenue de la Divette",
+    "Le Beau Site (Avenue Maréchal Foch)",
+    "Le Biquets (Avenue de la Brèche Buhot)",
+    "Avenue de Varaville",
+    "Avenue de la Marne",
+    "Avenue Alfred Piat",
+    "Avenue de la République (du n° 5 au n° 12)",
+    "Avenue du Président R. Poincaré (du n° 6 au n° 9)",
+    "Avenue du Gal Castelnau (du n° 1 au n° 12)",
+    "Avenue du Cdt Bertaux Levillain (du n° 1 au n° 17)",
+    "Boulevard des Diablotins",
+    "Avenue des Voiliers",
+    "Avenue de la Brèche Buhot",
+    "Avenue de l'Aquilon",
+    "Avenue du Maine",
+    "Chemin Cailloué",
+    "Résidence Clos du Golf Avenue Michel d'Ornano",
+    "Cap Cabourg Rue D. Morimbeau",
+    "Parking Delanoe",
+    "Thalasur, Sweet Home, camping de Mondeville, Fleur Marine et Frond de mer Bld C. De Gaulle",
+    "Résidence les Marines Allée de la Cigogne",
+    "Camping le Toucan, La passée aux canards",
+    "Camping la Pommeraie, av G. le Conquerant",
+    "Restaurant Jeff cuisine sincère 83 av G. le Conquerant",
+    "Camping vert près route de Caen",
+    "California Park, av de la Divette",
+    "L'Hippodrome, Avenue Michel d'Ornano",
+    "Avenue A. Thiers"
+  ]
+};
+
+function renderVoiesParticulieres() {
+  var both = VOIES_PARTICULIERES.actuellement;
+  var html = '<div id="voiesSection">';
+  html += '<div class="voies-title">';
+  html += '<h3><span class="voies-icon">📍</span> Voies à fréquences particulières</h3>';
+  html += '<div class="voies-legend">';
+  html += '<div class="voies-legend-item"><div class="v-dot both"></div>Voie présente dans les deux temporalités</div>';
+  html += '<div class="voies-legend-item"><div class="v-dot only"></div>Voie présente uniquement dans cette colonne</div>';
+  html += '</div></div>';
+  html += '<div class="voies-grid">';
+
+  // Colonne Situation actuelle
+  html += '<div class="voies-col">';
+  html += '<div class="voies-col-head actuelle"><span>Situation actuelle</span><span class="vc-count">' + VOIES_PARTICULIERES.actuellement.length + ' voies</span></div>';
+  html += '<div class="voies-list">';
+  VOIES_PARTICULIERES.actuellement.forEach(function(v) {
+    html += '<div class="voies-item"><div class="v-dot both"></div>' + v + '</div>';
+  });
+  html += '</div></div>';
+
+  // Colonne Situation à venir
+  html += '<div class="voies-col">';
+  html += '<div class="voies-col-head avenir"><span>Situation à venir</span><span class="vc-count">' + VOIES_PARTICULIERES.avenir.length + ' voies</span></div>';
+  html += '<div class="voies-list">';
+  VOIES_PARTICULIERES.avenir.forEach(function(v) {
+    var inBoth = both.indexOf(v) !== -1;
+    html += '<div class="voies-item"><div class="v-dot ' + (inBoth ? 'both' : 'only') + '"></div>' + v + '</div>';
+  });
+  html += '</div></div>';
+
+  html += '</div></div>';
+  return html;
+}
+
 function renderFrises(){
   document.getElementById('friseLegende').innerHTML = renderLegende();
   document.getElementById('friseContent').innerHTML =
     renderFriseAnnee('2026', CABOURG_R) +
     renderFriseAnnee('2027', CABOURG_R);
+  document.getElementById('voiesSection').innerHTML = renderVoiesParticulieres();
 }
 </script>
 </body>
